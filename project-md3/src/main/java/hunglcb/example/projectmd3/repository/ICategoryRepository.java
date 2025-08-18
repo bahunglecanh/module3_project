@@ -1,0 +1,18 @@
+package hunglcb.example.projectmd3.repository;
+
+import hunglcb.example.projectmd3.model.Category;
+
+import java.util.List;
+
+/**
+ * Repository interface for Category operations
+ */
+public interface ICategoryRepository {
+    
+    boolean save(Category category);
+    Category findById(Integer id);
+    boolean update(Category category);
+    boolean delete(Integer id);
+    List<Category> findAll();
+    Category findByName(String name);
+}
