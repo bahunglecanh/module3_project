@@ -416,51 +416,23 @@
             <!-- Navigation Menu -->
             <nav class="nav-menu">
                 <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link active">
-                        <span class="nav-icon"><i class="fas fa-th-large"></i></span>
-                        <span class="nav-text">Dashboard</span>
-                    </a>
-                </div>
-
-                <div class="nav-item">
                     <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
-                        <span class="nav-text">Activity</span>
+                        <span class="nav-icon"><i class="fas fa-users"></i></span>
+                        <span class="nav-text">User</span>
                     </a>
                 </div>
 
                 <div class="nav-item">
                     <a href="${pageContext.request.contextPath}/admin/products" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-book"></i></span>
-                        <span class="nav-text">Library</span>
+                        <span class="nav-icon"><i class="fas fa-box"></i></span>
+                        <span class="nav-text">Product</span>
                     </a>
                 </div>
 
                 <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/categories" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="nav-text">Authentication</span>
-                    </a>
-                </div>
-
-                <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/orders" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-calendar"></i></span>
-                        <span class="nav-text">Schedules</span>
-                    </a>
-                </div>
-
-                <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/messages" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-credit-card"></i></span>
-                        <span class="nav-text">Payouts</span>
-                    </a>
-                </div>
-
-                <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
-                        <span class="nav-text">Settings</span>
+                    <a href="${pageContext.request.contextPath}/admin/cart" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
+                        <span class="nav-text">Giỏ hàng</span>
                     </a>
                 </div>
 

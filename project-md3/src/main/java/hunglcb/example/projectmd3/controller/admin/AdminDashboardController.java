@@ -1,4 +1,4 @@
-package hunglcb.example.projectmd3.controller;
+package hunglcb.example.projectmd3.controller.admin;
 
 import hunglcb.example.projectmd3.model.User;
 
