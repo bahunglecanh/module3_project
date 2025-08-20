@@ -2,6 +2,7 @@ package hunglcb.example.projectmd3.controller;
 
 import hunglcb.example.projectmd3.model.Category;
 import hunglcb.example.projectmd3.model.Product;
+import hunglcb.example.projectmd3.model.User;
 import hunglcb.example.projectmd3.service.IProductService;
 import hunglcb.example.projectmd3.service.ICategoryService;
 import hunglcb.example.projectmd3.service.ProductService;
@@ -12,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -36,6 +38,21 @@ public class ProductController extends HttpServlet {
         // Set character encoding
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+        
+        // Get current user from session (same as HomeController)
+        HttpSession session = request.getSession(false);
+        User currentUser = null;
+        if (session != null) {
+            currentUser = (User) session.getAttribute("user");
+        }
+        
+        // Set user info for the view
+        request.setAttribute("currentUser", currentUser);
+        request.setAttribute("isLoggedIn", currentUser != null);
+        
+        // Check if user is admin
+        boolean isAdmin = currentUser != null && currentUser.isAdmin();
+        request.setAttribute("isAdmin", isAdmin);
         
         try {
             // Lấy parameters

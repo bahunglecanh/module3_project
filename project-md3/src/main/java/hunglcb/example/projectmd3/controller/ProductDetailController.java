@@ -80,6 +80,9 @@ public class ProductDetailController extends HttpServlet {
             // Tính tổng stock từ tất cả sizes
             Integer totalStock = productService.getTotalStock(productId);
             
+            // Check if user is admin
+            boolean isAdmin = currentUser != null && currentUser.isAdmin();
+            
             // Set attributes
             request.setAttribute("product", product);
             request.setAttribute("productSizes", productSizes);
@@ -88,6 +91,7 @@ public class ProductDetailController extends HttpServlet {
             request.setAttribute("relatedProducts", relatedProducts);
             request.setAttribute("currentUser", currentUser);
             request.setAttribute("isLoggedIn", currentUser != null);
+            request.setAttribute("isAdmin", isAdmin);
             
             // Forward to detail page
             request.getRequestDispatcher("/views/product-detail.jsp").forward(request, response);
