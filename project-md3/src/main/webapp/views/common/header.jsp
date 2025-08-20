@@ -297,10 +297,16 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <!-- Search Bar -->
                     <div class="search-container mx-auto my-3 my-lg-0">
-                        <div class="position-relative">
+                        <form method="GET" action="${pageContext.request.contextPath}/products" class="position-relative">
                             <i class="fas fa-search search-icon"></i>
-                            <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm...">
-                        </div>
+                            <input type="text" 
+                                   name="search" 
+                                   class="search-input" 
+                                   placeholder="Tìm kiếm sản phẩm..."
+                                   value="${param.search}"
+                                   id="searchInput">
+                            <button type="submit" style="display: none;"></button>
+                        </form>
                     </div>
 
                     <!-- Main Navigation -->
@@ -410,5 +416,32 @@
             </div>
         </div>
     </c:if>
+
+    <!-- Search JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = searchInput.closest('form');
+            
+            // Submit form on Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchForm.submit();
+                }
+            });
+            
+            // Submit form when clicking search icon
+            const searchIcon = document.querySelector('.search-icon');
+            searchIcon.addEventListener('click', function() {
+                if (searchInput.value.trim() !== '') {
+                    searchForm.submit();
+                }
+            });
+            
+            // Make search icon clickable
+            searchIcon.style.cursor = 'pointer';
+        });
+    </script>
 
     <!-- Main Content Starts Here -->

@@ -3,10 +3,10 @@ package hunglcb.example.projectmd3.controller;
 import hunglcb.example.projectmd3.model.Category;
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.repository.CategoryRepository;
-import hunglcb.example.projectmd3.repository.ICategoryRepository;
-import hunglcb.example.projectmd3.repository.IProductRepository;
-import hunglcb.example.projectmd3.repository.ProductRepository;
+import hunglcb.example.projectmd3.service.IProductService;
+import hunglcb.example.projectmd3.service.ICategoryService;
+import hunglcb.example.projectmd3.service.ProductService;
+import hunglcb.example.projectmd3.service.CategoryService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,13 +20,13 @@ import java.util.List;
 @WebServlet(name = "HomeController", urlPatterns = {"", "/", "/home"})
 public class HomeController extends HttpServlet {
     
-    private IProductRepository productRepository;
-    private ICategoryRepository categoryRepository;
+    private IProductService productService;
+    private ICategoryService categoryService;
 
     @Override
     public void init() throws ServletException {
-        productRepository = new ProductRepository();
-        categoryRepository = new CategoryRepository();
+        productService = new ProductService();
+        categoryService = new CategoryService();
     }
 
     @Override
@@ -61,15 +61,15 @@ public class HomeController extends HttpServlet {
         // Load data from database
         try {
             // Load featured products (latest 8 products)
-            List<Product> featuredProducts = productRepository.findFeaturedProducts(8);
+            List<Product> featuredProducts = productService.getFeaturedProducts(8);
             request.setAttribute("featuredProducts", featuredProducts);
             
             // Load all categories
-            List<Category> categories = categoryRepository.findAll();
+            List<Category> categories = categoryService.getAllCategories();
             request.setAttribute("categories", categories);
             
             // Load latest products for showcase
-            List<Product> latestProducts = productRepository.findLatestProducts(12);
+            List<Product> latestProducts = productService.getLatestProducts(12);
             request.setAttribute("latestProducts", latestProducts);
             
         } catch (Exception e) {

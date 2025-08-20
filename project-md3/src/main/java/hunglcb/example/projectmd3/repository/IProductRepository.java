@@ -1,6 +1,7 @@
 package hunglcb.example.projectmd3.repository;
 
 import hunglcb.example.projectmd3.model.Product;
+import hunglcb.example.projectmd3.model.ProductSize;
 
 import java.util.List;
 
@@ -12,10 +13,6 @@ public interface IProductRepository {
     boolean save(Product product);
     Product findById(Integer id);
     boolean update(Product product);
-    boolean delete(Integer id);
-    List<Product> findAll();
-    List<Product> findByCategoryId(Integer categoryId);
-    List<Product> findByNameContaining(String name);
     List<Product> findFeaturedProducts(int limit);
     List<Product> findLatestProducts(int limit);
     List<Product> findProductsInStock();
@@ -27,4 +24,10 @@ public interface IProductRepository {
     int countAll();
     int countByCategoryId(Integer categoryId);
     int countByNameContaining(String name);
+
+    List<ProductSize> getProductSizes(Integer productId);
+    List<ProductSize> getAvailableSizes(Integer productId);
+    Integer getTotalStock(Integer productId);
+    boolean isSizeAvailable(Integer productId, String size, Integer quantity);
+    boolean reduceStock(Integer productId, String size, Integer quantity);
 }

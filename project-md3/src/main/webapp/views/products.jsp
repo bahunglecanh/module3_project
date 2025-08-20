@@ -23,9 +23,9 @@
                 <div class="filters-sidebar">
                     <h5 class="filter-title">Danh mục</h5>
                     <ul class="category-list">
-                        <li><a href="${pageContext.request.contextPath}/products" class="category-link active">Tất cả sản phẩm</a></li>
+                        <li><a href="${pageContext.request.contextPath}/products" class="category-link ${empty selectedCategory ? 'active' : ''}">Tất cả sản phẩm</a></li>
                         <c:forEach var="category" items="${categories}">
-                            <li><a href="${pageContext.request.contextPath}/products?category=${category.id}" class="category-link">${category.name}</a></li>
+                            <li><a href="${pageContext.request.contextPath}/products?category=${category.id}" class="category-link ${selectedCategory eq category.id ? 'active' : ''}">${category.name}</a></li>
                         </c:forEach>
                     </ul>
                 </div>
@@ -34,7 +34,23 @@
             <!-- Products Content -->
             <div class="col-lg-9">
                 <div class="products-header">
-                    <h2>Tất cả sản phẩm</h2>
+                    <h2>
+                        <c:choose>
+                            <c:when test="${not empty searchQuery}">
+                                Kết quả tìm kiếm cho "<span class="text-primary">${searchQuery}</span>"
+                            </c:when>
+                            <c:when test="${not empty selectedCategory}">
+                                <c:forEach var="category" items="${categories}">
+                                    <c:if test="${selectedCategory eq category.id}">
+                                        ${category.name}
+                                    </c:if>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                Tất cả sản phẩm
+                            </c:otherwise>
+                        </c:choose>
+                    </h2>
                     <p class="products-count">Có ${totalProducts} sản phẩm</p>
                 </div>
                 
@@ -49,16 +65,16 @@
                                             <div class="product-image">
                                                 <c:choose>
                                                     <c:when test="${not empty product.imageUrl}">
-                                                        <img src="${product.imageUrl}" alt="${product.name}" class="img-fluid">
+                                                        <img src="${product.imageUrl}" alt="${product.name}" class="img-fluid lazy" loading="lazy">
                                                     </c:when>
                                                     <c:otherwise>
                                                         <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                                                             alt="${product.name}" class="img-fluid">
+                                                             alt="${product.name}" class="img-fluid lazy" loading="lazy">
                                                     </c:otherwise>
                                                 </c:choose>
                                                 
                                                 <div class="product-overlay">
-                                                    <a href="${pageContext.request.contextPath}/products/${product.id}" class="btn btn-primary btn-sm">
+                                                    <a href="${pageContext.request.contextPath}/detail/${product.id}" class="btn btn-primary btn-sm">
                                                         <i class="fas fa-eye me-1"></i>Xem chi tiết
                                                     </a>
                                                 </div>
@@ -72,6 +88,10 @@
                                             
                                             <div class="product-info">
                                                 <h6 class="product-name">${product.name}</h6>
+                                                
+                                                <c:if test="${not empty product.brandName}">
+                                                    <p class="product-brand">${product.brandName}</p>
+                                                </c:if>
                                                 
                                                 <c:if test="${not empty product.categoryName}">
                                                     <p class="product-category">${product.categoryName}</p>
@@ -97,16 +117,88 @@
                                     </div>
                                 </c:forEach>
                             </div>
+                            
+                            <!-- Phân trang -->
+                            <c:if test="${totalPages > 1}">
+                                <div class="pagination-container mt-4">
+                                    <nav aria-label="Product pagination">
+                                        <ul class="pagination justify-content-center">
+                                            <!-- Previous button -->
+                                            <c:if test="${hasPrevPage}">
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=${currentPage - 1}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>">
+                                                        <i class="fas fa-chevron-left"></i> Trước
+                                                    </a>
+                                                </li>
+                                            </c:if>
+                                            
+                                            <!-- Page numbers -->
+                                            <c:forEach var="pageNum" begin="1" end="${totalPages}">
+                                                <li class="page-item ${pageNum == currentPage ? 'active' : ''}">
+                                                    <a class="page-link" href="?page=${pageNum}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>">
+                                                        ${pageNum}
+                                                    </a>
+                                                </li>
+                                            </c:forEach>
+                                            
+                                            <!-- Next button -->
+                                            <c:if test="${hasNextPage}">
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=${currentPage + 1}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>">
+                                                        Sau <i class="fas fa-chevron-right"></i>
+                                                    </a>
+                                                </li>
+                                            </c:if>
+                                        </ul>
+                                    </nav>
+                                    
+                                    <!-- Page info -->
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted">
+                                            Trang ${currentPage} / ${totalPages} - 
+                                            Hiển thị ${(currentPage - 1) * productsPerPage + 1} - 
+                                            ${currentPage * productsPerPage > totalProducts ? totalProducts : currentPage * productsPerPage} 
+                                            trong tổng số ${totalProducts} sản phẩm
+                                        </small>
+                                    </div>
+                                </div>
+                            </c:if>
+                            
+                            <!-- Nếu chỉ có 1 trang -->
+                            <c:if test="${totalPages <= 1 && totalProducts > 0}">
+                                <div class="text-center mt-4">
+                                    <small class="text-muted">Hiển thị tất cả ${totalProducts} sản phẩm</small>
+                                </div>
+                            </c:if>
                         </c:when>
                         <c:otherwise>
                             <div class="no-products">
                                 <div class="text-center py-5">
-                                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                                    <h4>Chưa có sản phẩm nào</h4>
-                                    <p class="text-muted">Hiện tại chưa có sản phẩm nào để hiển thị.</p>
-                                    <a href="${pageContext.request.contextPath}/" class="btn btn-primary">
-                                        <i class="fas fa-home me-2"></i>Về trang chủ
-                                    </a>
+                                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                    <c:choose>
+                                        <c:when test="${not empty searchQuery}">
+                                            <h4>Không tìm thấy sản phẩm nào</h4>
+                                            <p class="text-muted">
+                                                Không có sản phẩm nào phù hợp với từ khóa "<strong>${searchQuery}</strong>".
+                                                <br>Hãy thử tìm kiếm với từ khóa khác.
+                                            </p>
+                                            <div class="mt-3">
+                                                <a href="${pageContext.request.contextPath}/products" class="btn btn-primary me-2">
+                                                    <i class="fas fa-th-large me-1"></i>Xem tất cả sản phẩm
+                                                </a>
+                                                <a href="${pageContext.request.contextPath}/" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-home me-1"></i>Về trang chủ
+                                                </a>
+                                            </div>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <h4>Chưa có sản phẩm nào</h4>
+                                            <p class="text-muted">Hiện tại chưa có sản phẩm nào để hiển thị.</p>
+                                            <a href="${pageContext.request.contextPath}/" class="btn btn-primary">
+                                                <i class="fas fa-home me-2"></i>Về trang chủ
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                             </div>
                         </c:otherwise>
@@ -296,6 +388,15 @@
         margin-bottom: 8px;
     }
     
+    .product-brand {
+        color: var(--primary-color);
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
     .product-category {
         color: var(--dark-gray);
         font-size: 0.9rem;
@@ -332,6 +433,38 @@
         background: var(--white);
         border-radius: 8px;
         box-shadow: var(--shadow);
+    }
+    
+    /* Pagination */
+    .pagination-container {
+        margin-top: 2rem;
+    }
+    
+    .pagination .page-link {
+        color: var(--primary-color);
+        border: 1px solid var(--border-color);
+        padding: 8px 12px;
+        margin: 0 2px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background-color: var(--secondary-color);
+        color: var(--white);
+        border-color: var(--secondary-color);
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--white);
+    }
+    
+    .pagination .page-item.disabled .page-link {
+        color: var(--dark-gray);
+        background-color: var(--light-gray);
+        border-color: var(--border-color);
     }
     
     /* Responsive */

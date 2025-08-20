@@ -3,18 +3,16 @@ package hunglcb.example.projectmd3.filter;
 import hunglcb.example.projectmd3.model.User;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter({"/admin/*", "/profile/*", "/orders/*", "/cart/*"})
 public class AuthenticationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // Initialization if needed
+        // Simple initialization
     }
 
     @Override
