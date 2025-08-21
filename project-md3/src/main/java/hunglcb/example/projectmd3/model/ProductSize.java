@@ -1,8 +1,12 @@
 package hunglcb.example.projectmd3.model;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
+/**
+ * ProductSize model for product sizes
+ * Mapped từ bảng product_sizes trong database
+ */
 public class ProductSize {
     private Integer id;
     private Integer productId;
@@ -10,22 +14,17 @@ public class ProductSize {
     private Integer stockQuantity;
     private BigDecimal priceAdjustment;
     private Boolean isAvailable;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private LocalDateTime createdAt;
 
-    // Default constructor
-    public ProductSize() {
-        this.stockQuantity = 0;
-        this.priceAdjustment = BigDecimal.ZERO;
-        this.isAvailable = true;
-    }
+    // Constructors
+    public ProductSize() {}
 
-    // Constructor with essential fields
     public ProductSize(Integer productId, String size, Integer stockQuantity) {
-        this();
         this.productId = productId;
         this.size = size;
         this.stockQuantity = stockQuantity;
+        this.priceAdjustment = BigDecimal.ZERO;
+        this.isAvailable = true;
     }
 
     // Getters and Setters
@@ -77,39 +76,21 @@ public class ProductSize {
         this.isAvailable = isAvailable;
     }
 
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     // Helper methods
     public boolean isInStock() {
-        return isAvailable && stockQuantity != null && stockQuantity > 0;
+        return stockQuantity != null && stockQuantity > 0 && Boolean.TRUE.equals(isAvailable);
     }
 
     public boolean isLowStock() {
         return isInStock() && stockQuantity <= 5;
-    }
-
-    public String getStockStatus() {
-        if (!isInStock()) {
-            return "out_of_stock";
-        } else if (isLowStock()) {
-            return "low_stock";
-        } else {
-            return "in_stock";
-        }
     }
 
     @Override

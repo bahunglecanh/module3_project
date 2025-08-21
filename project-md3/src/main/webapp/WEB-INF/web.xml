@@ -6,6 +6,12 @@
     
     <display-name>Shoe Store Web Application</display-name>
     <description>Website bán giày chất lượng cao</description>
+
+    <!-- Configurable base directory for uploads, persists across redeploys -->
+    <context-param>
+        <param-name>uploadBaseDir</param-name>
+        <param-value>${catalina.base}/uploads</param-value>
+    </context-param>
     
     <!-- Welcome files -->
     <welcome-file-list>
@@ -41,6 +47,16 @@
     <filter-mapping>
         <filter-name>AuthenticationFilter</filter-name>
         <url-pattern>/cart/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Global user context filter to expose currentUser/isLoggedIn/isAdmin to all views -->
+    <filter>
+        <filter-name>UserContextFilter</filter-name>
+        <filter-class>hunglcb.example.projectmd3.filter.UserContextFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>UserContextFilter</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     
     <!-- Error pages -->

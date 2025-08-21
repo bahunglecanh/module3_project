@@ -5,29 +5,29 @@ import hunglcb.example.projectmd3.model.ProductSize;
 
 import java.util.List;
 
-/**
- * Repository interface for Product operations
- */
 public interface IProductRepository {
     
+    // CRUD Operations
     boolean save(Product product);
     Product findById(Integer id);
     boolean update(Product product);
-    List<Product> findFeaturedProducts(int limit);
-    List<Product> findLatestProducts(int limit);
-    List<Product> findProductsInStock();
     
     // Pagination methods
     List<Product> findAllWithPagination(int page, int size);
     List<Product> findByCategoryIdWithPagination(Integer categoryId, int page, int size);
     List<Product> findByNameContainingWithPagination(String name, int page, int size);
+    
+    // Count methods for pagination
     int countAll();
     int countByCategoryId(Integer categoryId);
     int countByNameContaining(String name);
-
-    List<ProductSize> getProductSizes(Integer productId);
-    List<ProductSize> getAvailableSizes(Integer productId);
-    Integer getTotalStock(Integer productId);
-    boolean isSizeAvailable(Integer productId, String size, Integer quantity);
-    boolean reduceStock(Integer productId, String size, Integer quantity);
+    
+    // Price filter methods
+    List<Product> findByPriceRangeAndCategoryWithPagination(Double minPrice, Double maxPrice, Integer categoryId, int page, int size);
+    int countByPriceRangeAndCategory(Double minPrice, Double maxPrice, Integer categoryId);
+    
+    // Product Size operations
+    List<ProductSize> findSizesByProductId(Integer productId);
+    List<ProductSize> findAvailableSizesByProductId(Integer productId);
+    ProductSize findProductSizeByProductIdAndSize(Integer productId, String size);
 }

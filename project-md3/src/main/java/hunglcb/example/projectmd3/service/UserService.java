@@ -24,13 +24,17 @@ public class UserService implements IUserService {
         
         Account account = userRepository.authenticateByEmail(email.trim(), password);
         if (account != null && account.isActive()) {
-            // Convert Account to User directly (no separate users table)
+            // Load full user with profile details if available
+            User fullUser = userRepository.findUserById(account.getId());
+            if (fullUser != null) {
+                return fullUser;
+            }
+            // Fallback minimal user (should rarely happen)
             User user = new User();
             user.setId(account.getId());
             user.setEmail(account.getEmail());
             user.setRole(account.getRole());
             user.setStatus(account.getStatus());
-            // Set default full name from email
             user.setFullName(account.getEmail().split("@")[0]);
             return user;
         }

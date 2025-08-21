@@ -4,9 +4,6 @@ import hunglcb.example.projectmd3.model.Category;
 
 import java.util.List;
 
-/**
- * Repository interface for Category operations
- */
 public interface ICategoryRepository {
     
     boolean save(Category category);

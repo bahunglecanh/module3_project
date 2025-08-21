@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -154,6 +155,14 @@
             transform: scale(1.05);
         }
 
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
         .cart-icon {
             position: relative;
             color: var(--primary-color);
@@ -265,6 +274,15 @@
     </style>
 </head>
 <body>
+    <c:if test="${empty currentUser && not empty sessionScope.user}">
+        <c:set var="currentUser" value="${sessionScope.user}"/>
+    </c:if>
+    <c:if test="${empty isLoggedIn}">
+        <c:set var="isLoggedIn" value="${not empty currentUser}"/>
+    </c:if>
+    <c:if test="${empty isAdmin && not empty currentUser}">
+        <c:set var="isAdmin" value="${currentUser.admin}"/>
+    </c:if>
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="container">
@@ -347,7 +365,18 @@
                                 <!-- Logged in user menu -->
                                 <div class="user-menu dropdown">
                                     <div class="user-avatar" data-bs-toggle="dropdown">
-                                        ${currentUser.fullName.substring(0,1).toUpperCase()}
+                                        <c:choose>
+                                            <c:when test="${not empty currentUser.avatarUrl}">
+                                                <c:set var="hdrImgSrc" value="${currentUser.avatarUrl}" />
+                                                <c:if test="${not fn:startsWith(hdrImgSrc, 'http')}">
+                                                    <c:set var="hdrImgSrc" value="${pageContext.request.contextPath}/${hdrImgSrc}" />
+                                                </c:if>
+                                                <img src="${hdrImgSrc}" alt="Avatar" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${currentUser.firstLetter}
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><h6 class="dropdown-header">Xin chào, ${currentUser.fullName}!</h6></li>
