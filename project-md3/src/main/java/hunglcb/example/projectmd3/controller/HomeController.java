@@ -3,10 +3,7 @@ package hunglcb.example.projectmd3.controller;
 import hunglcb.example.projectmd3.model.Category;
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.service.IProductService;
-import hunglcb.example.projectmd3.service.ICategoryService;
-import hunglcb.example.projectmd3.service.ProductService;
-import hunglcb.example.projectmd3.service.CategoryService;
+import hunglcb.example.projectmd3.service.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -45,7 +42,7 @@ public class HomeController extends HttpServlet {
             if (currentUser != null) {
                 try {
                     // Refresh user to ensure latest avatar after profile update
-                    hunglcb.example.projectmd3.service.UserService us = new hunglcb.example.projectmd3.service.UserService();
+                    UserService us = new UserService();
                     User refreshed = us.findById(currentUser.getId());
                     if (refreshed != null) {
                         currentUser = refreshed;
