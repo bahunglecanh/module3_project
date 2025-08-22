@@ -63,6 +63,12 @@ public class HomeController extends HttpServlet {
         boolean isAdmin = currentUser != null && currentUser.isAdmin();
         request.setAttribute("isAdmin", isAdmin);
         
+        // Redirect admin users to admin dashboard
+        if (currentUser != null && isAdmin) {
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            return;
+        }
+        
         // Get any message from URL parameters
         String message = request.getParameter("message");
         if (message != null && !message.trim().isEmpty()) {
