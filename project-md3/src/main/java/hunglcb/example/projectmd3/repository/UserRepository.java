@@ -1,5 +1,6 @@
 package hunglcb.example.projectmd3.repository;
 
+import hunglcb.example.projectmd3.dto.UserDTO;
 import hunglcb.example.projectmd3.model.Account;
 import hunglcb.example.projectmd3.model.User;
 import hunglcb.example.projectmd3.model.UserProfile;
@@ -12,6 +13,43 @@ import java.util.List;
  * Implementation of User repository using accounts and user_profiles tables
  */
 public class UserRepository implements IUserRepository {
+    @Override
+    public List<UserDTO> findAllUser() {
+        List<UserDTO> users = new ArrayList<>();
+        String sql = "SELECT a.email, a.role, a.status, a.created_at, " +
+                    "p.full_name, p.phone, p.gender " +
+                    "FROM accounts a " +
+                    "LEFT JOIN user_profiles p ON a.id = p.account_id " +
+                    "WHERE a.status = 'active' " +
+                    "ORDER BY a.created_at DESC";
+
+        try (Connection connection = ConnectionDB.getConnectDB()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String email = resultSet.getString("email");
+                Account.Role role = Account.Role.valueOf(resultSet.getString("role").toUpperCase());
+                Account.Status status = Account.Status.valueOf(resultSet.getString("status").toUpperCase());
+                Timestamp createdAt = resultSet.getTimestamp("created_at");
+                String fullName = resultSet.getString("full_name");
+                String phone = resultSet.getString("phone");
+
+                UserProfile.Gender gender = null;
+                String genderStr = resultSet.getString("gender");
+                if (genderStr != null) {
+                    gender = UserProfile.Gender.valueOf(genderStr.toUpperCase());
+                }
+
+                users.add(new UserDTO(email, role, status, createdAt, fullName, phone, gender));
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi query findAllUser");
+            e.printStackTrace();
+        }
+
+        return users;
+    }
 
     @Override
     public boolean saveAccount(Account account) {

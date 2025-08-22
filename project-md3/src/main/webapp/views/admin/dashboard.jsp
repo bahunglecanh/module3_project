@@ -416,7 +416,14 @@
             <!-- Navigation Menu -->
             <nav class="nav-menu">
                 <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
+                    <a href="/views/home.jsp" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-home"></i></span>
+                        <span class="nav-text">Home</span>
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="/admin/listuser" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-users"></i></span>
                         <span class="nav-text">User</span>
                     </a>

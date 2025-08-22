@@ -1,5 +1,6 @@
 package hunglcb.example.projectmd3.service;
 
+import hunglcb.example.projectmd3.dto.UserDTO;
 import hunglcb.example.projectmd3.model.User;
 import hunglcb.example.projectmd3.service.UserService.ServiceResult;
 
@@ -67,4 +68,7 @@ public interface IUserService {
      * @return ServiceResult with success/error message
      */
     ServiceResult<Void> deleteUser(Long userId);
+
+
+    List<UserDTO> findAllUsers();
 }

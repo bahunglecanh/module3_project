@@ -1,5 +1,6 @@
 package hunglcb.example.projectmd3.service;
 
+import hunglcb.example.projectmd3.dto.UserDTO;
 import hunglcb.example.projectmd3.model.Account;
 import hunglcb.example.projectmd3.model.User;
 import hunglcb.example.projectmd3.repository.IUserRepository;
@@ -25,6 +26,7 @@ public class UserService implements IUserService {
     public UserService() {
         this.userRepository = new UserRepository();
     }
+
 
     @Override
     public ServiceResult<User> register(String email, String password, String confirmPassword, String fullName) {
@@ -206,6 +208,11 @@ public class UserService implements IUserService {
             e.printStackTrace();
             return ServiceResult.error("Lỗi hệ thống!");
         }
+    }
+
+    @Override
+    public List<UserDTO> findAllUsers() {
+        return userRepository.findAllUser();
     }
 
     // Validate registration input

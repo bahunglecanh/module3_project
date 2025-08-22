@@ -1,5 +1,6 @@
 package hunglcb.example.projectmd3.repository;
 
+import hunglcb.example.projectmd3.dto.UserDTO;
 import hunglcb.example.projectmd3.model.Account;
 import hunglcb.example.projectmd3.model.User;
 import hunglcb.example.projectmd3.model.UserProfile;
@@ -10,6 +11,8 @@ import java.util.List;
  * Repository interface for User operations (combines Account and UserProfile)
  */
 public interface IUserRepository {
+
+    List<UserDTO> findAllUser();
     
     // Account operations
     boolean saveAccount(Account account);
