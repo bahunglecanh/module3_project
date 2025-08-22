@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -154,6 +155,14 @@
             transform: scale(1.05);
         }
 
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
         .cart-icon {
             position: relative;
             color: var(--primary-color);
@@ -265,6 +274,15 @@
     </style>
 </head>
 <body>
+    <c:if test="${empty currentUser && not empty sessionScope.user}">
+        <c:set var="currentUser" value="${sessionScope.user}"/>
+    </c:if>
+    <c:if test="${empty isLoggedIn}">
+        <c:set var="isLoggedIn" value="${not empty currentUser}"/>
+    </c:if>
+    <c:if test="${empty isAdmin && not empty currentUser}">
+        <c:set var="isAdmin" value="${currentUser.admin}"/>
+    </c:if>
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="container">
@@ -297,10 +315,16 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <!-- Search Bar -->
                     <div class="search-container mx-auto my-3 my-lg-0">
-                        <div class="position-relative">
+                        <form method="GET" action="${pageContext.request.contextPath}/products" class="position-relative">
                             <i class="fas fa-search search-icon"></i>
-                            <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm...">
-                        </div>
+                            <input type="text" 
+                                   name="search" 
+                                   class="search-input" 
+                                   placeholder="Tìm kiếm sản phẩm..."
+                                   value="${param.search}"
+                                   id="searchInput">
+                            <button type="submit" style="display: none;"></button>
+                        </form>
                     </div>
 
                     <!-- Main Navigation -->
@@ -341,7 +365,18 @@
                                 <!-- Logged in user menu -->
                                 <div class="user-menu dropdown">
                                     <div class="user-avatar" data-bs-toggle="dropdown">
-                                        ${currentUser.fullName.substring(0,1).toUpperCase()}
+                                        <c:choose>
+                                            <c:when test="${not empty currentUser.avatarUrl}">
+                                                <c:set var="hdrImgSrc" value="${currentUser.avatarUrl}" />
+                                                <c:if test="${not fn:startsWith(hdrImgSrc, 'http')}">
+                                                    <c:set var="hdrImgSrc" value="${pageContext.request.contextPath}/${hdrImgSrc}" />
+                                                </c:if>
+                                                <img src="${hdrImgSrc}" alt="Avatar" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${currentUser.firstLetter}
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><h6 class="dropdown-header">Xin chào, ${currentUser.fullName}!</h6></li>
@@ -410,5 +445,32 @@
             </div>
         </div>
     </c:if>
+
+    <!-- Search JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = searchInput.closest('form');
+            
+            // Submit form on Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchForm.submit();
+                }
+            });
+            
+            // Submit form when clicking search icon
+            const searchIcon = document.querySelector('.search-icon');
+            searchIcon.addEventListener('click', function() {
+                if (searchInput.value.trim() !== '') {
+                    searchForm.submit();
+                }
+            });
+            
+            // Make search icon clickable
+            searchIcon.style.cursor = 'pointer';
+        });
+    </script>
 
     <!-- Main Content Starts Here -->

@@ -1,9 +1,8 @@
 package hunglcb.example.projectmd3.controller;
 
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.service.IUserService;
-import hunglcb.example.projectmd3.service.UserService;
-import hunglcb.example.projectmd3.service.UserService.ServiceResult;
+import hunglcb.example.projectmd3.service.user.IUserService;
+import hunglcb.example.projectmd3.service.user.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -87,6 +86,11 @@ public class AuthController extends HttpServlet {
             return;
         }
         
+        // preserve redirect param
+        String redirect = request.getParameter("redirect");
+        if (redirect != null && !redirect.isEmpty()) {
+            request.setAttribute("redirect", redirect);
+        }
         request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
 
@@ -108,36 +112,41 @@ public class AuthController extends HttpServlet {
         
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String rememberMe = request.getParameter("rememberMe");
+        String errorMessage = null;
 
-        ServiceResult<User> result = userService.login(email, password);
-
-        if (result.isSuccess()) {
-            // Login successful
-            User user = result.getData();
-            HttpSession session = request.getSession(true);
-            session.setAttribute("user", user);
-            session.setAttribute("isLoggedIn", true);
-            
-            // Set session timeout (30 minutes default, 7 days if remember me)
-            if ("on".equals(rememberMe)) {
-                session.setMaxInactiveInterval(7 * 24 * 60 * 60); // 7 days
-            } else {
-                session.setMaxInactiveInterval(30 * 60); // 30 minutes
-            }
-
-            // Redirect based on user role
-            if (user.isAdmin()) {
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-            } else {
-                response.sendRedirect(request.getContextPath() + "/");
-            }
+        // Quick validation
+        if (email == null || email.trim().isEmpty()) {
+            errorMessage = "Vui lòng nhập email!";
+        } else if (password == null || password.trim().isEmpty()) {
+            errorMessage = "Vui lòng nhập mật khẩu!";
         } else {
-            // Login failed
-            request.setAttribute("errorMessage", result.getMessage());
-            request.setAttribute("email", email);
-            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+            try {
+                // Try login via service
+                User user = userService.login(email, password);
+                
+                if (user != null) {
+                    // Success
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute("user", user);
+                    String redirect = request.getParameter("redirect");
+                    if (redirect != null && !redirect.isEmpty()) {
+                        response.sendRedirect(redirect);
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/");
+                    }
+                    return;
+                }
+                errorMessage = "Email hoặc mật khẩu không đúng!";
+            } catch (Exception e) {
+                errorMessage = "Lỗi hệ thống!";
+                e.printStackTrace();
+            }
         }
+
+        // Show error
+        request.setAttribute("errorMessage", errorMessage);
+        request.setAttribute("email", email);
+        request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
 
     private void handleRegister(HttpServletRequest request, HttpServletResponse response) 
@@ -147,21 +156,46 @@ public class AuthController extends HttpServlet {
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
         String fullName = request.getParameter("fullName");
+        String errorMessage = null;
 
-        ServiceResult<User> result = userService.register(email, password, confirmPassword, fullName);
-
-        if (result.isSuccess()) {
-            // Registration successful
-            request.setAttribute("successMessage", result.getMessage());
-            request.setAttribute("showLoginLink", true);
-            request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
+        // Quick validation
+        if (email == null || email.trim().isEmpty()) {
+            errorMessage = "Vui lòng nhập email!";
+        } else if (password == null || password.length() < 6) {
+            errorMessage = "Mật khẩu phải có ít nhất 6 ký tự!";
+        } else if (!password.equals(confirmPassword)) {
+            errorMessage = "Xác nhận mật khẩu không khớp!";
+        } else if (fullName == null || fullName.trim().isEmpty()) {
+            errorMessage = "Vui lòng nhập họ tên!";
         } else {
-            // Registration failed
-            request.setAttribute("errorMessage", result.getMessage());
-            request.setAttribute("email", email);
-            request.setAttribute("fullName", fullName);
-            request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
+            try {
+                // Try register via service
+                if (userService.emailExists(email.trim())) {
+                    errorMessage = "Email đã được sử dụng!";
+                } else {
+                    // Create user object
+                    User newUser = new User(email.trim(), password, fullName.trim());
+                    if (userService.register(newUser)) {
+                        // Success
+                        request.setAttribute("successMessage", "Đăng ký thành công!");
+                        request.setAttribute("showLoginLink", true);
+                        request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
+                        return;
+                    } else {
+                        errorMessage = "Lỗi tạo tài khoản!";
+                    }
+                }
+            } catch (Exception e) {
+                errorMessage = "Lỗi hệ thống!";
+                e.printStackTrace();
+            }
         }
+
+        // Show error
+        request.setAttribute("errorMessage", errorMessage);
+        request.setAttribute("email", email);
+        request.setAttribute("fullName", fullName);
+        request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
     }
 
     private void handleLogout(HttpServletRequest request, HttpServletResponse response) 
@@ -172,6 +206,6 @@ public class AuthController extends HttpServlet {
             session.invalidate();
         }
         
-        response.sendRedirect(request.getContextPath() + "/auth/login?message=Đăng xuất thành công!");
+        response.sendRedirect(request.getContextPath() + "/");
     }
 }

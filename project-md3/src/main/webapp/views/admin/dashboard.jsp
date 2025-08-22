@@ -407,7 +407,7 @@
                         <i class="fas fa-gem"></i>
                     </div>
                     <div class="logo-text">
-                        <div class="logo-title">VENUS</div>
+                        <div class="logo-title">ADMIN</div>
                         <div class="logo-subtitle">DASHBOARD</div>
                     </div>
                 </a>

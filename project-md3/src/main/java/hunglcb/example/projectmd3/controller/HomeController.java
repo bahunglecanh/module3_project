@@ -3,10 +3,11 @@ package hunglcb.example.projectmd3.controller;
 import hunglcb.example.projectmd3.model.Category;
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.repository.CategoryRepository;
-import hunglcb.example.projectmd3.repository.ICategoryRepository;
-import hunglcb.example.projectmd3.repository.IProductRepository;
-import hunglcb.example.projectmd3.repository.ProductRepository;
+import hunglcb.example.projectmd3.service.product.IProductService;
+import hunglcb.example.projectmd3.service.category.ICategoryService;
+import hunglcb.example.projectmd3.service.product.ProductService;
+import hunglcb.example.projectmd3.service.category.CategoryService;
+import hunglcb.example.projectmd3.service.user.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,13 +21,13 @@ import java.util.List;
 @WebServlet(name = "HomeController", urlPatterns = {"", "/", "/home"})
 public class HomeController extends HttpServlet {
     
-    private IProductRepository productRepository;
-    private ICategoryRepository categoryRepository;
+    private IProductService productService;
+    private ICategoryService categoryService;
 
     @Override
     public void init() throws ServletException {
-        productRepository = new ProductRepository();
-        categoryRepository = new CategoryRepository();
+        productService = new ProductService();
+        categoryService = new CategoryService();
     }
 
     @Override
@@ -37,11 +38,22 @@ public class HomeController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         
-        // Get current user from session
+        // Get current user from session and refresh latest profile avatar if needed
         HttpSession session = request.getSession(false);
         User currentUser = null;
         if (session != null) {
             currentUser = (User) session.getAttribute("user");
+            if (currentUser != null) {
+                try {
+                    // Refresh user to ensure latest avatar after profile update
+                    UserService us = new UserService();
+                    User refreshed = us.findById(currentUser.getId());
+                    if (refreshed != null) {
+                        currentUser = refreshed;
+                        session.setAttribute("user", refreshed);
+                    }
+                } catch (Exception ignored) {}
+            }
         }
         
         // Set user info for the view
@@ -67,15 +79,15 @@ public class HomeController extends HttpServlet {
         // Load data from database
         try {
             // Load featured products (latest 8 products)
-            List<Product> featuredProducts = productRepository.findFeaturedProducts(8);
+            List<Product> featuredProducts = productService.getFeaturedProducts(8);
             request.setAttribute("featuredProducts", featuredProducts);
             
             // Load all categories
-            List<Category> categories = categoryRepository.findAll();
+            List<Category> categories = categoryService.getAllCategories();
             request.setAttribute("categories", categories);
             
-            // Load latest products for showcase
-            List<Product> latestProducts = productRepository.findLatestProducts(12);
+            // Load latest products for showcase (using pagination)
+            List<Product> latestProducts = productService.getFeaturedProducts(12);
             request.setAttribute("latestProducts", latestProducts);
             
         } catch (Exception e) {

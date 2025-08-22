@@ -1,6 +1,7 @@
-package hunglcb.example.projectmd3.repository;
+package hunglcb.example.projectmd3.repository.category;
 
 import hunglcb.example.projectmd3.model.Category;
+import hunglcb.example.projectmd3.repository.ConnectionDB;
 
 import java.sql.*;
 import java.util.ArrayList;

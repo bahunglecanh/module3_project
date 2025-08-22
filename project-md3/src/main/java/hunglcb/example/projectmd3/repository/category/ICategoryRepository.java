@@ -1,12 +1,9 @@
-package hunglcb.example.projectmd3.repository;
+package hunglcb.example.projectmd3.repository.category;
 
 import hunglcb.example.projectmd3.model.Category;
 
 import java.util.List;
 
-/**
- * Repository interface for Category operations
- */
 public interface ICategoryRepository {
     
     boolean save(Category category);

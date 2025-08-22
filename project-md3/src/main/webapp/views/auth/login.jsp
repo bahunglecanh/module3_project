@@ -17,6 +17,22 @@
                         <p class="auth-subtitle">Chào mừng bạn quay trở lại!</p>
                     </div>
 
+                    <!-- Error Message Display -->
+                    <c:if test="${not empty errorMessage}">
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ${errorMessage}
+                        </div>
+                    </c:if>
+
+                    <!-- Success Message Display -->
+                    <c:if test="${not empty message}">
+                        <div class="alert alert-success" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            ${message}
+                        </div>
+                    </c:if>
+
                     <form action="${pageContext.request.contextPath}/auth/login" method="post" class="auth-form">
                         <div class="form-group">
                             <label for="email" class="form-label">
@@ -49,12 +65,6 @@
                         </div>
 
                         <div class="form-options">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
-                                <label class="form-check-label" for="rememberMe">
-                                    Ghi nhớ đăng nhập
-                                </label>
-                            </div>
                             <a href="${pageContext.request.contextPath}/auth/forgot-password" class="forgot-link">
                                 Quên mật khẩu?
                             </a>
@@ -149,6 +159,26 @@
         margin-bottom: 30px;
     }
 
+    .alert {
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        border-radius: var(--border-radius);
+        border: 1px solid;
+        font-size: 14px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
     .form-group {
         margin-bottom: 20px;
     }
@@ -198,9 +228,7 @@
     }
 
     .form-options {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        text-align: right;
         margin-bottom: 25px;
     }
 

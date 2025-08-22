@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Product {
+    // ===== COLUMNS FROM PRODUCTS TABLE =====
     private Integer id;
     private Integer categoryId;
     private String name;
@@ -11,11 +12,13 @@ public class Product {
     private BigDecimal price;
     private Integer stockQuantity;
     private String imageUrl;
+    private Integer brandId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     
-    // Category info (for JOIN queries)
+    // ===== JOIN FIELDS (for display only) =====
     private String categoryName;
+    private String brandName;
 
     // Default constructor
     public Product() {
@@ -33,7 +36,7 @@ public class Product {
     // Full constructor
     public Product(Integer id, Integer categoryId, String name, String description, 
                   BigDecimal price, Integer stockQuantity, String imageUrl, 
-                  Timestamp createdAt, Timestamp updatedAt) {
+                  Integer brandId, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.categoryId = categoryId;
         this.name = name;
@@ -41,11 +44,12 @@ public class Product {
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.imageUrl = imageUrl;
+        this.brandId = brandId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    // Getters and Setters
+    // ===== GETTERS AND SETTERS =====
     public Integer getId() {
         return id;
     }
@@ -102,6 +106,14 @@ public class Product {
         this.imageUrl = imageUrl;
     }
 
+    public Integer getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Integer brandId) {
+        this.brandId = brandId;
+    }
+
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -118,6 +130,7 @@ public class Product {
         this.updatedAt = updatedAt;
     }
 
+    // JOIN FIELDS
     public String getCategoryName() {
         return categoryName;
     }
@@ -126,7 +139,15 @@ public class Product {
         this.categoryName = categoryName;
     }
 
-    // Utility methods
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    // ===== UTILITY METHODS =====
     public boolean isInStock() {
         return stockQuantity != null && stockQuantity > 0;
     }
@@ -150,7 +171,9 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", stockQuantity=" + stockQuantity +
+                ", brandId=" + brandId +
                 ", categoryName='" + categoryName + '\'' +
+                ", brandName='" + brandName + '\'' +
                 '}';
     }
 }

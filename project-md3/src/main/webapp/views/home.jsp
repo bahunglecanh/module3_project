@@ -108,7 +108,7 @@
         
         <div class="row">
             <c:forEach var="category" items="${categories}" varStatus="status">
-                <div class="col-lg-4 col-md-6 mb-4">
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                     <div class="category-card">
                         <div class="category-image">
                             <c:choose>
@@ -121,11 +121,11 @@
                                          alt="${category.name}" class="img-fluid">
                                 </c:when>
                                 <c:when test="${status.index == 2}">
-                                    <img src="https://images.unsplash.com/photo-1515347619252-60a4bf4fff4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                                    <img src="https://images.unsplash.com/photo-1515347619252-60a4bf4fff4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                                          alt="${category.name}" class="img-fluid">
                                 </c:when>
                                 <c:otherwise>
-                                    <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                                    <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                                          alt="${category.name}" class="img-fluid">
                                 </c:otherwise>
                             </c:choose>
@@ -176,7 +176,7 @@
                             </c:choose>
                             
                             <div class="product-overlay">
-                                <a href="${pageContext.request.contextPath}/products/${product.id}" class="btn btn-primary btn-sm">
+                                <a href="${pageContext.request.contextPath}/detail/${product.id}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-eye me-1"></i>Xem chi tiết
                                 </a>
                             </div>
@@ -196,6 +196,10 @@
                         
                         <div class="product-info">
                             <h6 class="product-name">${product.name}</h6>
+                            
+                            <c:if test="${not empty product.brandName}">
+                                <p class="product-brand">${product.brandName}</p>
+                            </c:if>
                             
                             <c:if test="${not empty product.categoryName}">
                                 <p class="product-category">${product.categoryName}</p>
@@ -375,6 +379,8 @@
         overflow: hidden;
         box-shadow: var(--shadow);
         transition: all 0.3s ease;
+        height: 100%;
+        margin-bottom: 15px;
     }
 
     .category-card:hover {
@@ -507,6 +513,15 @@
         color: var(--white);
     }
 
+    .product-brand {
+        color: var(--primary-color);
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
     .product-category {
         color: var(--dark-gray);
         font-size: 0.9rem;
@@ -635,11 +650,45 @@
         }
         
         .category-image {
-            height: 250px;
+            height: 220px;
         }
         
         .product-image {
             height: 200px;
+        }
+        
+        /* Đảm bảo categories hiển thị đẹp trên mobile */
+        .categories-section .col-lg-3 {
+            margin-bottom: 20px;
+        }
+    }
+    
+    /* Responsive cho tablet */
+    @media (min-width: 769px) and (max-width: 991px) {
+        .category-image {
+            height: 280px;
+        }
+        
+        .category-title {
+            font-size: 1.3rem;
+        }
+    }
+    
+    /* Responsive cho desktop */
+    @media (min-width: 992px) {
+        .category-image {
+            height: 300px;
+        }
+        
+        /* Đảm bảo 4 categories có cùng chiều cao */
+        .categories-section .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .categories-section .col-lg-3 {
+            display: flex;
+            flex-direction: column;
         }
     }
 </style>
