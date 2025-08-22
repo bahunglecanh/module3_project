@@ -58,42 +58,56 @@ public class ProductController extends HttpServlet {
             // Lấy parameters
             String categoryParam = request.getParameter("category");
             String searchParam = request.getParameter("search");
+            String minPriceParam = request.getParameter("minPrice");
+            String maxPriceParam = request.getParameter("maxPrice");
             int page = getPageParameter(request);
+            
+            // Parse price parameters
+            Double minPrice = null;
+            Double maxPrice = null;
+            try {
+                if (minPriceParam != null && !minPriceParam.trim().isEmpty()) {
+                    minPrice = Double.valueOf(minPriceParam.trim());
+                }
+                if (maxPriceParam != null && !maxPriceParam.trim().isEmpty()) {
+                    maxPrice = Double.valueOf(maxPriceParam.trim());
+                }
+            } catch (NumberFormatException e) {
+                // Invalid price format, ignore
+            }
+            
+            // Parse category parameter
+            Integer categoryId = null;
+            try {
+                if (categoryParam != null && !categoryParam.trim().isEmpty()) {
+                    categoryId = Integer.valueOf(categoryParam);
+                }
+            } catch (NumberFormatException e) {
+                // Invalid category format, ignore
+            }
             
             List<Product> products;
             int totalProducts;
             
-            // Tìm kiếm theo tên sản phẩm
+            // Tìm kiếm theo tên sản phẩm (ưu tiên cao nhất)
             if (searchParam != null && !searchParam.trim().isEmpty()) {
                 String searchQuery = searchParam.trim();
-                System.out.println("=== CONTROLLER DEBUG ===");
-                System.out.println("Received search parameter: '" + searchParam + "'");
-                System.out.println("Trimmed search query: '" + searchQuery + "'");
-                System.out.println("Page: " + page + ", Size: " + PRODUCTS_PER_PAGE);
-                
                 products = productService.searchProductsByName(searchQuery, page - 1, PRODUCTS_PER_PAGE);
                 totalProducts = productService.getProductsCountByName(searchQuery);
-                
-                System.out.println("Service returned " + products.size() + " products");
-                System.out.println("Total count: " + totalProducts);
-                System.out.println("=== END CONTROLLER DEBUG ===");
-                
                 request.setAttribute("searchQuery", searchQuery);
             }
-            // Lọc theo category
-            else if (categoryParam != null && !categoryParam.trim().isEmpty()) {
-                try {
-                    Integer categoryId = Integer.valueOf(categoryParam);
-                    // Lấy sản phẩm theo category với phân trang
-                    products = productService.getProductsByCategoryWithPagination(categoryId, page - 1, PRODUCTS_PER_PAGE);
-                    totalProducts = productService.getProductsCountByCategory(categoryId);
-                } catch (NumberFormatException e) {
-                    // Category ID không hợp lệ
-                    products = productService.getProductsWithPagination(page - 1, PRODUCTS_PER_PAGE);
-                    totalProducts = productService.getTotalProductsCount();
-                }
-            } else {
-                // Lấy tất cả sản phẩm với phân trang
+            // Lọc theo giá (ưu tiên tiếp theo, có thể kèm category)
+            else if (minPrice != null || maxPrice != null) {
+                products = productService.getProductsByPriceRangeAndCategory(minPrice, maxPrice, categoryId, page - 1, PRODUCTS_PER_PAGE);
+                totalProducts = productService.getProductsCountByPriceRangeAndCategory(minPrice, maxPrice, categoryId);
+            }
+            // Chỉ lọc theo category
+            else if (categoryId != null) {
+                products = productService.getProductsByCategoryWithPagination(categoryId, page - 1, PRODUCTS_PER_PAGE);
+                totalProducts = productService.getProductsCountByCategory(categoryId);
+            } 
+            // Lấy tất cả sản phẩm
+            else {
                 products = productService.getProductsWithPagination(page - 1, PRODUCTS_PER_PAGE);
                 totalProducts = productService.getTotalProductsCount();
             }
@@ -111,6 +125,10 @@ public class ProductController extends HttpServlet {
             request.setAttribute("categories", categories);
             request.setAttribute("totalProducts", totalProducts);
             request.setAttribute("selectedCategory", categoryParam);
+            
+            // Filter attributes
+            request.setAttribute("selectedMinPrice", minPriceParam);
+            request.setAttribute("selectedMaxPrice", maxPriceParam);
             
             // Pagination attributes
             request.setAttribute("currentPage", page);

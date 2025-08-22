@@ -21,13 +21,77 @@
             <!-- Sidebar Filters -->
             <div class="col-lg-3">
                 <div class="filters-sidebar">
-                    <h5 class="filter-title">Danh mục</h5>
-                    <ul class="category-list">
-                        <li><a href="${pageContext.request.contextPath}/products" class="category-link ${empty selectedCategory ? 'active' : ''}">Tất cả sản phẩm</a></li>
-                        <c:forEach var="category" items="${categories}">
-                            <li><a href="${pageContext.request.contextPath}/products?category=${category.id}" class="category-link ${selectedCategory eq category.id ? 'active' : ''}">${category.name}</a></li>
-                        </c:forEach>
-                    </ul>
+                    <!-- Category Filter -->
+                    <div class="filter-section">
+                        <h5 class="filter-title">Danh mục</h5>
+                        <ul class="category-list">
+                            <li><a href="${pageContext.request.contextPath}/products" class="category-link ${empty selectedCategory ? 'active' : ''}">Tất cả sản phẩm</a></li>
+                            <c:forEach var="category" items="${categories}">
+                                <li><a href="${pageContext.request.contextPath}/products?category=${category.id}" class="category-link ${selectedCategory eq category.id ? 'active' : ''}">${category.name}</a></li>
+                            </c:forEach>
+                        </ul>
+                    </div>
+                    
+                    <!-- Price Filter -->
+                    <div class="filter-section">
+                        <h5 class="filter-title">Lọc theo giá</h5>
+                        <form method="GET" action="${pageContext.request.contextPath}/products" class="price-filter-form">
+                            <!-- Preserve category parameter -->
+                            <c:if test="${not empty selectedCategory}">
+                                <input type="hidden" name="category" value="${selectedCategory}" />
+                            </c:if>
+                            
+                            <div class="price-inputs">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">Từ</span>
+                                    <input type="number" 
+                                           name="minPrice" 
+                                           class="form-control" 
+                                           placeholder="0"
+                                           value="${selectedMinPrice}"
+                                           min="0"
+                                           step="1000">
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Đến</span>
+                                    <input type="number" 
+                                           name="maxPrice" 
+                                           class="form-control" 
+                                           placeholder="10000000"
+                                           value="${selectedMaxPrice}"
+                                           min="0"
+                                           step="1000">
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-buttons">
+                                <button type="submit" class="btn btn-primary btn-sm me-2">
+                                    <i class="fas fa-filter me-1"></i>Lọc
+                                </button>
+                                <a href="${pageContext.request.contextPath}/products<c:if test='${not empty selectedCategory}'>?category=${selectedCategory}</c:if>" 
+                                   class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-times me-1"></i>Xóa
+                                </a>
+                            </div>
+                        </form>
+                        
+                        <!-- Quick Price Filters -->
+                        <div class="quick-price-filters mt-3">
+                            <h6 class="mb-2">Khoảng giá phổ biến:</h6>
+                            <div class="d-grid gap-1">
+                                <a href="${pageContext.request.contextPath}/products?maxPrice=500000<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>" 
+                                   class="btn btn-outline-primary btn-sm">Dưới 500.000₫</a>
+                                <a href="${pageContext.request.contextPath}/products?minPrice=500000&maxPrice=1000000<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>" 
+                                   class="btn btn-outline-primary btn-sm">500.000₫ - 1.000.000₫</a>
+                                <a href="${pageContext.request.contextPath}/products?minPrice=1000000&maxPrice=2000000<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>" 
+                                   class="btn btn-outline-primary btn-sm">1.000.000₫ - 2.000.000₫</a>
+                                <a href="${pageContext.request.contextPath}/products?minPrice=2000000<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>" 
+                                   class="btn btn-outline-primary btn-sm">Trên 2.000.000₫</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -52,6 +116,29 @@
                         </c:choose>
                     </h2>
                     <p class="products-count">Có ${totalProducts} sản phẩm</p>
+                    
+                    <!-- Active Filters Display -->
+                    <c:if test="${not empty selectedMinPrice or not empty selectedMaxPrice}">
+                        <div class="active-filters">
+                            <span class="filter-label">Bộ lọc đang áp dụng:</span>
+                            <c:if test="${not empty selectedMinPrice}">
+                                <span class="filter-tag">
+                                    Từ: ${selectedMinPrice}₫
+                                    <a href="${pageContext.request.contextPath}/products?maxPrice=${selectedMaxPrice}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>" 
+                                       class="remove-filter">×</a>
+                                </span>
+                            </c:if>
+                            <c:if test="${not empty selectedMaxPrice}">
+                                <span class="filter-tag">
+                                    Đến: ${selectedMaxPrice}₫
+                                    <a href="${pageContext.request.contextPath}/products?minPrice=${selectedMinPrice}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>" 
+                                       class="remove-filter">×</a>
+                                </span>
+                            </c:if>
+                            <a href="${pageContext.request.contextPath}/products<c:if test='${not empty selectedCategory}'>?category=${selectedCategory}</c:if>" 
+                               class="clear-all-filters">Xóa tất cả bộ lọc</a>
+                        </div>
+                    </c:if>
                 </div>
                 
                 <!-- Products Grid -->
@@ -126,7 +213,7 @@
                                             <!-- Previous button -->
                                             <c:if test="${hasPrevPage}">
                                                 <li class="page-item">
-                                                    <a class="page-link" href="?page=${currentPage - 1}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>">
+                                                    <a class="page-link" href="?page=${currentPage - 1}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if><c:if test='${not empty selectedMinPrice}'>&minPrice=${selectedMinPrice}</c:if><c:if test='${not empty selectedMaxPrice}'>&maxPrice=${selectedMaxPrice}</c:if>">
                                                         <i class="fas fa-chevron-left"></i> Trước
                                                     </a>
                                                 </li>
@@ -135,7 +222,7 @@
                                             <!-- Page numbers -->
                                             <c:forEach var="pageNum" begin="1" end="${totalPages}">
                                                 <li class="page-item ${pageNum == currentPage ? 'active' : ''}">
-                                                    <a class="page-link" href="?page=${pageNum}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>">
+                                                    <a class="page-link" href="?page=${pageNum}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if><c:if test='${not empty selectedMinPrice}'>&minPrice=${selectedMinPrice}</c:if><c:if test='${not empty selectedMaxPrice}'>&maxPrice=${selectedMaxPrice}</c:if>">
                                                         ${pageNum}
                                                     </a>
                                                 </li>
@@ -144,7 +231,7 @@
                                             <!-- Next button -->
                                             <c:if test="${hasNextPage}">
                                                 <li class="page-item">
-                                                    <a class="page-link" href="?page=${currentPage + 1}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if>">
+                                                    <a class="page-link" href="?page=${currentPage + 1}<c:if test='${not empty selectedCategory}'>&category=${selectedCategory}</c:if><c:if test='${not empty selectedMinPrice}'>&minPrice=${selectedMinPrice}</c:if><c:if test='${not empty selectedMaxPrice}'>&maxPrice=${selectedMaxPrice}</c:if>">
                                                         Sau <i class="fas fa-chevron-right"></i>
                                                     </a>
                                                 </li>
@@ -281,9 +368,112 @@
         font-weight: 500;
     }
     
+    /* Filter Sections */
+    .filter-section {
+        margin-bottom: 30px;
+    }
+    
+    .filter-section:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Price Filter */
+    .price-filter-form .input-group-text {
+        background-color: var(--white);
+        border-color: #ddd;
+        color: var(--text-color);
+        font-size: 0.9rem;
+    }
+    
+    .price-filter-form .form-control {
+        border-color: #ddd;
+        font-size: 0.9rem;
+    }
+    
+    .price-filter-form .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .filter-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .quick-price-filters h6 {
+        color: var(--dark-blue);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .quick-price-filters .btn-outline-primary {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+    
+    .quick-price-filters .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
     /* Products Header */
     .products-header {
         margin-bottom: 30px;
+    }
+    
+    /* Active Filters */
+    .active-filters {
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-top: 15px;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .filter-label {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-right: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .filter-tag {
+        display: inline-block;
+        background: var(--primary-color);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        margin-right: 8px;
+        margin-bottom: 5px;
+    }
+    
+    .remove-filter {
+        color: white;
+        text-decoration: none;
+        margin-left: 5px;
+        font-weight: bold;
+        opacity: 0.8;
+    }
+    
+    .remove-filter:hover {
+        color: white;
+        opacity: 1;
+    }
+    
+    .clear-all-filters {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .clear-all-filters:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
     }
     
     .products-header h2 {

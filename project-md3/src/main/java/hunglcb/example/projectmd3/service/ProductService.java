@@ -42,17 +42,8 @@ public class ProductService implements IProductService {
     
     @Override
     public List<Product> getFeaturedProducts(int limit) {
-        return productRepository.findFeaturedProducts(limit);
-    }
-    
-    @Override
-    public List<Product> getLatestProducts(int limit) {
-        return productRepository.findLatestProducts(limit);
-    }
-    
-    @Override
-    public List<Product> getProductsInStock() {
-        return productRepository.findProductsInStock();
+        // Sử dụng pagination với page=0 thay vì method riêng
+        return productRepository.findAllWithPagination(0, limit);
     }
     
     @Override
@@ -69,32 +60,42 @@ public class ProductService implements IProductService {
     public int getProductsCountByName(String name) {
         return productRepository.countByNameContaining(name);
     }
-    
+
+    // ====== PRICE FILTER METHODS ======
+
+    @Override
+    public List<Product> getProductsByPriceRangeAndCategory(Double minPrice, Double maxPrice, Integer categoryId, int page, int size) {
+        return productRepository.findByPriceRangeAndCategoryWithPagination(minPrice, maxPrice, categoryId, page, size);
+    }
+
+    @Override
+    public int getProductsCountByPriceRangeAndCategory(Double minPrice, Double maxPrice, Integer categoryId) {
+        return productRepository.countByPriceRangeAndCategory(minPrice, maxPrice, categoryId);
+    }
+
+    // ====== PRODUCT SIZE METHODS ======
+
     @Override
     public List<ProductSize> getProductSizes(Integer productId) {
-        return productRepository.getProductSizes(productId);
+        return productRepository.findSizesByProductId(productId);
     }
-    
+
     @Override
     public List<ProductSize> getAvailableProductSizes(Integer productId) {
-        return productRepository.getAvailableSizes(productId);
+        return productRepository.findAvailableSizesByProductId(productId);
     }
-    
-    @Override
-    public Integer getTotalStock(Integer productId) {
-        return productRepository.getTotalStock(productId);
-    }
-    
 
-    
+    @Override
+    public ProductSize getProductSizeByProductIdAndSize(Integer productId, String size) {
+        return productRepository.findProductSizeByProductIdAndSize(productId, size);
+    }
+
     @Override
     public boolean isProductSizeAvailable(Integer productId, String size, Integer quantity) {
-        return productRepository.isSizeAvailable(productId, size, quantity);
+        ProductSize productSize = getProductSizeByProductIdAndSize(productId, size);
+        if (productSize == null || !productSize.getIsAvailable()) {
+            return false;
+        }
+        return productSize.getStockQuantity() >= quantity;
     }
-    
-    @Override
-    public boolean reduceProductStock(Integer productId, String size, Integer quantity) {
-        return productRepository.reduceStock(productId, size, quantity);
-    }
-    
 }

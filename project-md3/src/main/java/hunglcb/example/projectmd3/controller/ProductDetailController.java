@@ -7,6 +7,8 @@ import hunglcb.example.projectmd3.model.User;
 import hunglcb.example.projectmd3.service.IProductService;
 import hunglcb.example.projectmd3.service.ICategoryService;
 import hunglcb.example.projectmd3.service.ProductService;
+import hunglcb.example.projectmd3.service.ICartService;
+import hunglcb.example.projectmd3.service.CartService;
 import hunglcb.example.projectmd3.service.CategoryService;
 
 import javax.servlet.ServletException;
@@ -24,11 +26,13 @@ public class ProductDetailController extends HttpServlet {
 
     private IProductService productService;
     private ICategoryService categoryService;
+    private ICartService cartService;
 
     @Override
     public void init() throws ServletException {
         productService = new ProductService();
         categoryService = new CategoryService();
+        cartService = new CartService();
     }
 
     @Override
@@ -57,11 +61,15 @@ public class ProductDetailController extends HttpServlet {
                 return;
             }
             
-            // Lấy sizes thực từ database
+            // Load product sizes từ database
             List<ProductSize> productSizes = productService.getProductSizes(productId);
             List<ProductSize> availableSizes = productService.getAvailableProductSizes(productId);
             
-
+            // Calculate total stock từ tất cả sizes
+            Integer totalStock = productSizes.stream()
+                .mapToInt(size -> size.getStockQuantity() != null ? size.getStockQuantity() : 0)
+                .sum();
+            // Sử dụng stock_quantity từ products table
             
             // Lấy sản phẩm liên quan (cùng category)
             List<Product> relatedProducts = null;
@@ -76,9 +84,6 @@ public class ProductDetailController extends HttpServlet {
             if (session != null) {
                 currentUser = (User) session.getAttribute("user");
             }
-            
-            // Tính tổng stock từ tất cả sizes
-            Integer totalStock = productService.getTotalStock(productId);
             
             // Check if user is admin
             boolean isAdmin = currentUser != null && currentUser.isAdmin();
@@ -127,7 +132,7 @@ public class ProductDetailController extends HttpServlet {
         try {
             // Lấy thông tin từ form
             Integer productId = Integer.valueOf(request.getParameter("productId"));
-            String selectedSize = request.getParameter("size");
+            String size = request.getParameter("size");
             Integer quantity = Integer.valueOf(request.getParameter("quantity"));
             
             // Kiểm tra user đã login chưa
@@ -139,7 +144,7 @@ public class ProductDetailController extends HttpServlet {
             
             if (currentUser == null) {
                 // Chưa login -> redirect to login
-                String returnUrl = request.getContextPath() + "/product/" + productId;
+                String returnUrl = request.getContextPath() + "/detail/" + productId;
                 response.sendRedirect(request.getContextPath() + "/auth/login?redirect=" + 
                     java.net.URLEncoder.encode(returnUrl, "UTF-8"));
                 return;
@@ -152,23 +157,35 @@ public class ProductDetailController extends HttpServlet {
                 return;
             }
             
-            // Kiểm tra size và stock
-            if (!productService.isProductSizeAvailable(productId, selectedSize, quantity)) {
-                request.setAttribute("errorMessage", "Size " + selectedSize + " không có sẵn hoặc không đủ hàng.");
+            // Kiểm tra size và stock availability 
+            if (!productService.isProductSizeAvailable(productId, size, quantity)) {
+                ProductSize productSize = productService.getProductSizeByProductIdAndSize(productId, size);
+                String errorMsg = productSize == null ? 
+                    "Size " + size + " không có sẵn" : 
+                    "Không đủ hàng cho size " + size + ". Còn lại: " + productSize.getStockQuantity();
+                request.setAttribute("errorMessage", errorMsg);
                 doGet(request, response);
                 return;
             }
-            
-            // TODO: Thêm vào giỏ hàng (sẽ implement sau)
-            // Hiện tại chỉ hiển thị thông báo thành công
-            
-            // Thông báo thành công
-            String successMessage = String.format("Đã thêm %s (Size %s, SL: %d) vào giỏ hàng!", 
-                product.getName(), selectedSize, quantity);
-            
-            // Redirect về trang detail với thông báo
-            response.sendRedirect(request.getContextPath() + "/product/" + productId + 
-                "?message=" + java.net.URLEncoder.encode(successMessage, "UTF-8"));
+
+            // Lưu vào giỏ hàng
+            boolean added = cartService.addToCart(currentUser.getId(), productId, size, quantity);
+            if (!added) {
+                request.setAttribute("errorMessage", "Không thể thêm vào giỏ hàng. Vui lòng thử lại.");
+                doGet(request, response);
+                return;
+            }
+
+            // Redirect: nếu next=checkout thì sang trang checkout, ngược lại quay về detail
+            String next = request.getParameter("next");
+            if ("checkout".equalsIgnoreCase(next)) {
+                response.sendRedirect(request.getContextPath() + "/checkout");
+            } else {
+                String successMessage = String.format("Đã thêm %s (Size %s, SL: %d) vào giỏ hàng!",
+                        product.getName(), size, quantity);
+                response.sendRedirect(request.getContextPath() + "/detail/" + productId +
+                        "?message=" + java.net.URLEncoder.encode(successMessage, "UTF-8"));
+            }
             
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dữ liệu không hợp lệ");

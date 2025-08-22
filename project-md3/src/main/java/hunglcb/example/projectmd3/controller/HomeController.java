@@ -37,11 +37,22 @@ public class HomeController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         
-        // Get current user from session
+        // Get current user from session and refresh latest profile avatar if needed
         HttpSession session = request.getSession(false);
         User currentUser = null;
         if (session != null) {
             currentUser = (User) session.getAttribute("user");
+            if (currentUser != null) {
+                try {
+                    // Refresh user to ensure latest avatar after profile update
+                    hunglcb.example.projectmd3.service.UserService us = new hunglcb.example.projectmd3.service.UserService();
+                    User refreshed = us.findById(currentUser.getId());
+                    if (refreshed != null) {
+                        currentUser = refreshed;
+                        session.setAttribute("user", refreshed);
+                    }
+                } catch (Exception ignored) {}
+            }
         }
         
         // Set user info for the view
@@ -68,8 +79,8 @@ public class HomeController extends HttpServlet {
             List<Category> categories = categoryService.getAllCategories();
             request.setAttribute("categories", categories);
             
-            // Load latest products for showcase
-            List<Product> latestProducts = productService.getLatestProducts(12);
+            // Load latest products for showcase (using pagination)
+            List<Product> latestProducts = productService.getFeaturedProducts(12);
             request.setAttribute("latestProducts", latestProducts);
             
         } catch (Exception e) {

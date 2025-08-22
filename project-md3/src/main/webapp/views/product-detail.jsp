@@ -22,6 +22,13 @@
 <!-- Product Detail -->
 <div class="product-detail-page">
     <div class="container">
+        <!-- Alerts -->
+        <c:if test="${not empty param.message}">
+            <div class="alert alert-success">${param.message}</div>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-danger">${errorMessage}</div>
+        </c:if>
         <div class="row">
             <!-- Product Images -->
             <div class="col-lg-6">
@@ -119,21 +126,22 @@
                     </div>
                     
                     <!-- Add to cart form -->
-                    <c:if test="${totalStock > 0}">
+                    <c:if test="${product.stockQuantity > 0}">
                         <form action="${pageContext.request.contextPath}/detail/${product.id}" method="post" class="add-to-cart-form">
                             <input type="hidden" name="action" value="add_to_cart">
                             <input type="hidden" name="productId" value="${product.id}">
                             
-                            <!-- Size selection với stock thực -->
+                            <!-- Size selection từ database -->
                             <div class="size-selection mb-3">
                                 <label class="form-label">Chọn size:</label>
                                 <div class="size-options">
-                                    <c:forEach var="size" items="${productSizes}">
+                                    <c:forEach var="size" items="${productSizes}" varStatus="status">
                                         <div class="size-option">
                                             <input type="radio" name="size" value="${size.size}" id="size-${size.size}" 
                                                    ${size.stockQuantity > 0 ? '' : 'disabled'} 
                                                    data-stock="${size.stockQuantity}"
-                                                   onchange="updateMaxQuantity(${size.stockQuantity})" required>
+                                                   onchange="updateMaxQuantity(${size.stockQuantity})" 
+                                                   ${status.first ? 'required' : ''}>
                                             <label for="size-${size.size}" class="size-label ${size.stockQuantity == 0 ? 'out-of-stock' : ''}">
                                                 ${size.size}
                                                 <c:if test="${size.stockQuantity == 0}">
@@ -175,7 +183,7 @@
                     </c:if>
                     
                     <!-- Out of stock message -->
-                    <c:if test="${totalStock == 0}">
+                    <c:if test="${product.stockQuantity == 0}">
                         <div class="out-of-stock-message">
                             <p class="text-muted">Sản phẩm hiện tại đã hết hàng cho tất cả sizes.</p>
                             <button type="button" class="btn btn-outline-primary" onclick="notifyWhenAvailable(${product.id})">
@@ -751,10 +759,20 @@
             alert('Vui lòng chọn số lượng!');
             return;
         }
-        
-        // TODO: Implement buy now logic (redirect to checkout)
-        const message = `Mua ngay: ${productId} - Size: ${selectedSize.value} - SL: ${quantity}`;
-        alert(message + '\n\nChức năng checkout sẽ được phát triển sau!');
+
+        // Submit a hidden form to add to cart then go to checkout
+        var ctx = '<c:out value="${pageContext.request.contextPath}"/>';
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = ctx + '/detail/' + productId;
+        form.innerHTML = '' +
+            '<input type="hidden" name="action" value="add_to_cart" />' +
+            '<input type="hidden" name="productId" value="' + productId + '" />' +
+            '<input type="hidden" name="size" value="' + selectedSize.value + '" />' +
+            '<input type="hidden" name="quantity" value="' + quantity + '" />' +
+            '<input type="hidden" name="next" value="checkout" />';
+        document.body.appendChild(form);
+        form.submit();
     }
     
     // Add to wishlist (placeholder)

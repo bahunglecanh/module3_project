@@ -86,6 +86,11 @@ public class AuthController extends HttpServlet {
             return;
         }
         
+        // preserve redirect param
+        String redirect = request.getParameter("redirect");
+        if (redirect != null && !redirect.isEmpty()) {
+            request.setAttribute("redirect", redirect);
+        }
         request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
 
@@ -123,7 +128,12 @@ public class AuthController extends HttpServlet {
                     // Success
                     HttpSession session = request.getSession(true);
                     session.setAttribute("user", user);
-                    response.sendRedirect(request.getContextPath() + "/");
+                    String redirect = request.getParameter("redirect");
+                    if (redirect != null && !redirect.isEmpty()) {
+                        response.sendRedirect(redirect);
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/");
+                    }
                     return;
                 }
                 errorMessage = "Email hoặc mật khẩu không đúng!";
@@ -196,6 +206,6 @@ public class AuthController extends HttpServlet {
             session.invalidate();
         }
         
-        response.sendRedirect(request.getContextPath() + "/auth/login?message=Đăng xuất thành công!");
+        response.sendRedirect(request.getContextPath() + "/");
     }
 }

@@ -51,28 +51,40 @@ public class UserRepository implements IUserRepository {
     
     @Override
     public User findUserByEmail(String email) {
-        // JOIN accounts with user_profiles (correct table name)
-        String sql = "SELECT a.*, up.full_name, up.phone, up.avatar_url FROM accounts a " +
+        String sql = "SELECT a.*, up.id AS profile_id, up.full_name, up.phone, up.gender, up.birth_date, up.avatar_url FROM accounts a " +
                     "LEFT JOIN user_profiles up ON a.id = up.account_id " +
                     "WHERE a.email = ? AND a.status = 'active'";
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
             stmt.setString(1, email);
-            
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 User user = new User();
                 user.setId(rs.getInt("id"));
                 user.setEmail(email);
                 
-                // Get full_name from user_profiles, fallback to email prefix
+                // Profile fields
+                int profileId = rs.getInt("profile_id");
+                if (!rs.wasNull()) {
+                    user.setProfileId(profileId);
+                }
                 String fullName = rs.getString("full_name");
                 if (fullName == null || fullName.isEmpty()) {
                     fullName = email.split("@")[0];
                 }
                 user.setFullName(fullName);
                 user.setPhone(rs.getString("phone"));
+                String genderStr = rs.getString("gender");
+                if (genderStr != null) {
+                    if ("male".equalsIgnoreCase(genderStr)) {
+                        user.setGender(hunglcb.example.projectmd3.model.UserProfile.Gender.MALE);
+                    } else if ("female".equalsIgnoreCase(genderStr)) {
+                        user.setGender(hunglcb.example.projectmd3.model.UserProfile.Gender.FEMALE);
+                    } else if ("other".equalsIgnoreCase(genderStr)) {
+                        user.setGender(hunglcb.example.projectmd3.model.UserProfile.Gender.OTHER);
+                    }
+                }
+                user.setBirthDate(rs.getDate("birth_date"));
                 user.setAvatarUrl(rs.getString("avatar_url"));
                 
                 // Role conversion
@@ -102,27 +114,39 @@ public class UserRepository implements IUserRepository {
     
     @Override
     public User findUserById(int id) {
-        String sql = "SELECT a.*, up.full_name, up.phone, up.avatar_url FROM accounts a " +
+        String sql = "SELECT a.*, up.id AS profile_id, up.full_name, up.phone, up.gender, up.birth_date, up.avatar_url FROM accounts a " +
                     "LEFT JOIN user_profiles up ON a.id = up.account_id " +
                     "WHERE a.id = ? AND a.status = 'active'";
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
             stmt.setInt(1, id);
-            
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 User user = new User();
                 user.setId(rs.getInt("id"));
                 user.setEmail(rs.getString("email"));
                 
-                // Get full_name from user_profiles, fallback to email prefix
+                int profileId = rs.getInt("profile_id");
+                if (!rs.wasNull()) {
+                    user.setProfileId(profileId);
+                }
                 String fullName = rs.getString("full_name");
                 if (fullName == null || fullName.isEmpty()) {
                     fullName = rs.getString("email").split("@")[0];
                 }
                 user.setFullName(fullName);
                 user.setPhone(rs.getString("phone"));
+                String genderStr = rs.getString("gender");
+                if (genderStr != null) {
+                    if ("male".equalsIgnoreCase(genderStr)) {
+                        user.setGender(hunglcb.example.projectmd3.model.UserProfile.Gender.MALE);
+                    } else if ("female".equalsIgnoreCase(genderStr)) {
+                        user.setGender(hunglcb.example.projectmd3.model.UserProfile.Gender.FEMALE);
+                    } else if ("other".equalsIgnoreCase(genderStr)) {
+                        user.setGender(hunglcb.example.projectmd3.model.UserProfile.Gender.OTHER);
+                    }
+                }
+                user.setBirthDate(rs.getDate("birth_date"));
                 user.setAvatarUrl(rs.getString("avatar_url"));
                 
                 // Role conversion
@@ -238,16 +262,62 @@ public class UserRepository implements IUserRepository {
     
     @Override
     public boolean updateUser(User user) {
-        String sql = "UPDATE user_profiles SET full_name = ?, phone = ?, avatar_url = ? WHERE account_id = ?";
+        String updateSql = "UPDATE user_profiles SET full_name = ?, phone = ?, gender = ?, birth_date = ?, avatar_url = COALESCE(?, avatar_url) WHERE account_id = ?";
         try (Connection conn = ConnectionDB.getConnectDB();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, user.getFullName());
-            stmt.setString(2, user.getPhone());
-            stmt.setString(3, user.getAvatarUrl());
-            stmt.setInt(4, user.getId());  // user.getId() is account_id
-            
-            return stmt.executeUpdate() > 0;
+             PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+            updateStmt.setString(1, user.getFullName());
+            updateStmt.setString(2, user.getPhone());
+            String genderVal = null;
+            if (user.getGender() != null) {
+                switch (user.getGender()) {
+                    case MALE:
+                        genderVal = "male";
+                        break;
+                    case FEMALE:
+                        genderVal = "female";
+                        break;
+                    case OTHER:
+                        genderVal = "other";
+                        break;
+                }
+            }
+            updateStmt.setString(3, genderVal);
+            updateStmt.setDate(4, user.getBirthDate());
+            updateStmt.setString(5, user.getAvatarUrl());
+            updateStmt.setInt(6, user.getId());
+            int rows = updateStmt.executeUpdate();
+            if (rows > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // If no row was updated, insert new profile
+        String insertSql = "INSERT INTO user_profiles (account_id, full_name, phone, gender, birth_date, avatar_url) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = ConnectionDB.getConnectDB();
+             PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+            insertStmt.setInt(1, user.getId());
+            insertStmt.setString(2, user.getFullName());
+            insertStmt.setString(3, user.getPhone());
+            String genderVal = null;
+            if (user.getGender() != null) {
+                switch (user.getGender()) {
+                    case MALE:
+                        genderVal = "male";
+                        break;
+                    case FEMALE:
+                        genderVal = "female";
+                        break;
+                    case OTHER:
+                        genderVal = "other";
+                        break;
+                }
+            }
+            insertStmt.setString(4, genderVal);
+            insertStmt.setDate(5, user.getBirthDate());
+            insertStmt.setString(6, user.getAvatarUrl());
+            return insertStmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
