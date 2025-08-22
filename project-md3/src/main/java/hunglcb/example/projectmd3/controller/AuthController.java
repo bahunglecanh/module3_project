@@ -122,7 +122,7 @@ public class AuthController extends HttpServlet {
         } else {
             try {
                 // Try login via service
-                User user = userService.login(email, password);
+                UserService.ServiceResult<User> user = userService.login(email, password);
                 
                 if (user != null) {
                     // Success
@@ -175,7 +175,7 @@ public class AuthController extends HttpServlet {
                 } else {
                     // Create user object
                     User newUser = new User(email.trim(), password, fullName.trim());
-                    if (userService.register(newUser)) {
+                    if (userService.register(newUser).isSuccess()) {
                         // Success
                         request.setAttribute("successMessage", "Đăng ký thành công!");
                         request.setAttribute("showLoginLink", true);
