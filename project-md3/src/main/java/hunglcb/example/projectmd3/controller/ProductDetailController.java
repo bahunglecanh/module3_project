@@ -2,14 +2,13 @@ package hunglcb.example.projectmd3.controller;
 
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.ProductSize;
-import hunglcb.example.projectmd3.model.Category;
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.service.IProductService;
-import hunglcb.example.projectmd3.service.ICategoryService;
-import hunglcb.example.projectmd3.service.ProductService;
-import hunglcb.example.projectmd3.service.ICartService;
-import hunglcb.example.projectmd3.service.CartService;
-import hunglcb.example.projectmd3.service.CategoryService;
+import hunglcb.example.projectmd3.service.product.IProductService;
+import hunglcb.example.projectmd3.service.category.ICategoryService;
+import hunglcb.example.projectmd3.service.product.ProductService;
+import hunglcb.example.projectmd3.service.cart.ICartService;
+import hunglcb.example.projectmd3.service.cart.CartService;
+import hunglcb.example.projectmd3.service.category.CategoryService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
-import java.util.Arrays;
 
 @WebServlet(name = "ProductDetailController", urlPatterns = {"/detail/*"})
 public class ProductDetailController extends HttpServlet {

@@ -1,10 +1,10 @@
 package hunglcb.example.projectmd3.controller;
 
-import hunglcb.example.projectmd3.model.dto.CartItemView;
-import hunglcb.example.projectmd3.model.dto.CartSummary;
+import hunglcb.example.projectmd3.dto.CartItemView;
+import hunglcb.example.projectmd3.dto.CartSummary;
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.service.CartService;
-import hunglcb.example.projectmd3.service.ICartService;
+import hunglcb.example.projectmd3.service.cart.CartService;
+import hunglcb.example.projectmd3.service.cart.ICartService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

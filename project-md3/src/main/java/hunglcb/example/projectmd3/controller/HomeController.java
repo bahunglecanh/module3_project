@@ -3,7 +3,11 @@ package hunglcb.example.projectmd3.controller;
 import hunglcb.example.projectmd3.model.Category;
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.service.*;
+import hunglcb.example.projectmd3.service.product.IProductService;
+import hunglcb.example.projectmd3.service.category.ICategoryService;
+import hunglcb.example.projectmd3.service.product.ProductService;
+import hunglcb.example.projectmd3.service.category.CategoryService;
+import hunglcb.example.projectmd3.service.user.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -60,6 +64,12 @@ public class HomeController extends HttpServlet {
         boolean isAdmin = currentUser != null && currentUser.isAdmin();
         request.setAttribute("isAdmin", isAdmin);
         
+        // Redirect admin users to admin dashboard
+        if (currentUser != null && isAdmin) {
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            return;
+        }
+
         // Get any message from URL parameters
         String message = request.getParameter("message");
         if (message != null && !message.trim().isEmpty()) {

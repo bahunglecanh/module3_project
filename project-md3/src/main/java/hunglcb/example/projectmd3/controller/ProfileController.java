@@ -2,8 +2,8 @@ package hunglcb.example.projectmd3.controller;
 
 import hunglcb.example.projectmd3.model.User;
 import hunglcb.example.projectmd3.model.UserProfile;
-import hunglcb.example.projectmd3.service.IUserService;
-import hunglcb.example.projectmd3.service.UserService;
+import hunglcb.example.projectmd3.service.user.IUserService;
+import hunglcb.example.projectmd3.service.user.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -18,8 +18,6 @@ import java.sql.Date;
 import javax.servlet.http.Part;
 import java.io.File;
 import java.io.InputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
