@@ -1,5 +1,6 @@
 package hunglcb.example.projectmd3.service.product;
 
+import hunglcb.example.projectmd3.dto.ProductDTO;
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.ProductSize;
 import hunglcb.example.projectmd3.repository.product.IProductRepository;
@@ -20,9 +21,31 @@ public class ProductService implements IProductService {
         this.productRepository = productRepository;
     }
     
+    // ====== CRUD OPERATIONS ======
+    
+    @Override
+    public boolean addProduct(Product product) {
+        return productRepository.save(product);
+    }
+    
+    @Override
+    public boolean updateProduct(Product product) {
+        return productRepository.update(product);
+    }
+    
+    @Override
+    public boolean deleteProduct(Integer id) {
+        return productRepository.delete(id);
+    }
+    
     @Override
     public Product getProductDetail(Integer productId) {
         return productRepository.findById(productId);
+    }
+    
+    @Override
+    public List<ProductDTO> findAllProducts() {
+        return productRepository.findAllProducts();
     }
     
     @Override

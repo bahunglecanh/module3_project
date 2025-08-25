@@ -1,5 +1,6 @@
 package hunglcb.example.projectmd3.repository.product;
 
+import hunglcb.example.projectmd3.dto.ProductDTO;
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.ProductSize;
 
@@ -11,6 +12,10 @@ public interface IProductRepository {
     boolean save(Product product);
     Product findById(Integer id);
     boolean update(Product product);
+    boolean delete(Integer id);
+
+    //Lấy tất cả product
+    List<ProductDTO> findAllProducts();
     
     // Pagination methods
     List<Product> findAllWithPagination(int page, int size);

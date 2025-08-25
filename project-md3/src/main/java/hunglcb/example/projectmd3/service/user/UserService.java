@@ -88,6 +88,33 @@ public class UserService implements IUserService {
         public List<UserDTO> findAllUsers() {
             return userRepository.findAllUser();
         }
+
+    @Override
+    public List<UserDTO> searchByName(String fullName) {
+        return userRepository.searchByName(fullName);
     }
+
+    @Override
+    public boolean banUser(int userId) {
+        if (userId <= 0) {
+            return false;
+        }
+        return userRepository.banUser(userId);
+    }
+
+    @Override
+    public boolean unbanUser(int userId) {
+        if (userId <= 0) {
+            return false;
+        }
+        return userRepository.unbanUser(userId);
+    }
+
+    @Override
+    public int getTotalUsersCount() {
+        List<UserDTO> users = findAllUsers();
+        return users != null ? users.size() : 0;
+    }
+}
 
 

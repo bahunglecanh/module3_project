@@ -9,6 +9,7 @@ import java.util.List;
 public interface IUserRepository {
 
     List<UserDTO> findAllUser();
+    List<UserDTO> searchByName(String fullName);
 
     Account authenticateByEmail(String email, String password);
     User findUserByEmail(String email);
@@ -17,4 +18,6 @@ public interface IUserRepository {
     boolean saveUser(User user);
     boolean updateUser(User user);
     boolean deleteAccount(int userId);
+    boolean banUser(int userId);
+    boolean unbanUser(int userId);
 }

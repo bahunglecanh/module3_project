@@ -6,6 +6,7 @@ import hunglcb.example.projectmd3.model.UserProfile;
 import java.sql.Timestamp;
 
 public class UserDTO {
+    private int id;
     private String email;
     private Account.Role role;
     private Account.Status status;
@@ -18,8 +19,9 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(String email, Account.Role role, Account.Status status, Timestamp createdAt, 
+    public UserDTO(int id, String email, Account.Role role, Account.Status status, Timestamp createdAt, 
                    String fullName, String phone, UserProfile.Gender gender) {
+        this.id = id;
         this.email = email;
         this.role = role;
         this.status = status;
@@ -30,6 +32,14 @@ public class UserDTO {
     }
 
     // Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getEmail() {
         return email;
     }

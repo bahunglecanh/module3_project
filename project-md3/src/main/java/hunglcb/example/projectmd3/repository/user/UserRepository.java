@@ -14,18 +14,19 @@ public class UserRepository implements IUserRepository {
     @Override
     public List<UserDTO> findAllUser() {
         List<UserDTO> users = new ArrayList<>();
-        String sql = "SELECT a.email, a.role, a.status, a.created_at, " +
-                    "p.full_name, p.phone, p.gender " +
-                    "FROM accounts a " +
-                    "LEFT JOIN user_profiles p ON a.id = p.account_id " +
-                    "WHERE a.status = 'active' " +
-                    "ORDER BY a.created_at DESC";
+                        String sql = "SELECT a.id, a.email, a.role, a.status, a.created_at, " +
+                "p.full_name, p.phone, p.gender " +
+                "FROM accounts a " +
+                "LEFT JOIN user_profiles p ON a.id = p.account_id " +
+                "WHERE a.status IN ('active', 'banned') " +
+                "ORDER BY a.created_at DESC";
 
         try (Connection connection = ConnectionDB.getConnectDB()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
+                int id = resultSet.getInt("id");
                 String email = resultSet.getString("email");
                 Account.Role role = Account.Role.valueOf(resultSet.getString("role").toUpperCase());
                 Account.Status status = Account.Status.valueOf(resultSet.getString("status").toUpperCase());
@@ -39,12 +40,52 @@ public class UserRepository implements IUserRepository {
                     gender = UserProfile.Gender.valueOf(genderStr.toUpperCase());
                 }
 
-                users.add(new UserDTO(email, role, status, createdAt, fullName, phone, gender));
+                users.add(new UserDTO(id, email, role, status, createdAt, fullName, phone, gender));
             }
         } catch (SQLException e) {
             System.out.println("Lỗi query findAllUser");
             e.printStackTrace();
         }
+
+        return users;
+    }
+
+    @Override
+    public List<UserDTO> searchByName(String fullName) {
+        String sql = "SELECT a.id, a.email, a.role, a.status, a.created_at, " +
+                "p.full_name, p.phone, p.gender " +
+                "FROM accounts a " +
+                "LEFT JOIN user_profiles p ON a.id = p.account_id " +
+                "WHERE a.status IN ('active', 'banned') " +
+                "AND p.full_name LIKE CONCAT('%',?,'%') " +
+                "ORDER BY a.created_at DESC";
+        List<UserDTO> users = new ArrayList<>();
+        try(Connection connection = ConnectionDB.getConnectDB()){
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, fullName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            int id = resultSet.getInt("id");
+            String email = resultSet.getString("email");
+            Account.Role role = Account.Role.valueOf(resultSet.getString("role").toUpperCase());
+            Account.Status status = Account.Status.valueOf(resultSet.getString("status").toUpperCase());
+            Timestamp createdAt = resultSet.getTimestamp("created_at");
+            String actualFullName = resultSet.getString("full_name");
+            String phone = resultSet.getString("phone");
+
+            UserProfile.Gender gender = null;
+            String genderStr = resultSet.getString("gender");
+            if (genderStr != null) {
+                gender = UserProfile.Gender.valueOf(genderStr.toUpperCase());
+            }
+
+            users.add(new UserDTO(id, email, role, status, createdAt, actualFullName, phone, gender));
+        }
+    } catch (SQLException e) {
+        System.out.println("Lỗi query findAllUser");
+        e.printStackTrace();
+    }
 
         return users;
     }
@@ -414,5 +455,41 @@ public class UserRepository implements IUserRepository {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean banUser(int userId) {
+        String sql = "UPDATE accounts SET status = 'banned', updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        
+        try (Connection conn = ConnectionDB.getConnectDB();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, userId);
+            int rowsAffected = stmt.executeUpdate();
+            
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean unbanUser(int userId) {
+        String sql = "UPDATE accounts SET status = 'active', updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        
+        try (Connection conn = ConnectionDB.getConnectDB();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, userId);
+            int rowsAffected = stmt.executeUpdate();
+            
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

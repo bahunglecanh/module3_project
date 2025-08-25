@@ -230,6 +230,10 @@
             background: linear-gradient(135deg, #10b981 0%, #047857 100%);
         }
 
+        .stat-icon.categories {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
         .stat-icon.orders {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
@@ -416,7 +420,7 @@
             <!-- Navigation Menu -->
             <nav class="nav-menu">
                 <div class="nav-item">
-                    <a href="/views/home.jsp" class="nav-link active">
+                    <a href="/?view=home" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-home"></i></span>
                         <span class="nav-text">Home</span>
                     </a>
@@ -430,9 +434,16 @@
                 </div>
 
                 <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/products" class="nav-link">
+                    <a href="/admin/products" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-box"></i></span>
                         <span class="nav-text">Product</span>
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="/admin/categories" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-tags"></i></span>
+                        <span class="nav-text">Category</span>
                     </a>
                 </div>
 
@@ -483,6 +494,17 @@
                     </div>
                     <div class="stat-number">${stats.totalProducts != null ? stats.totalProducts : 0}</div>
                     <div class="stat-description">Products in inventory</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h6 class="stat-title">Total Categories</h6>
+                        <div class="stat-icon categories">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number">${stats.totalCategories != null ? stats.totalCategories : 0}</div>
+                    <div class="stat-description">Product categories</div>
                 </div>
 
                 <div class="stat-card">
@@ -576,6 +598,12 @@
                                 </div>
                                 <div class="quick-action-text">Manage Products</div>
                             </a>
+                            <a href="${pageContext.request.contextPath}/admin/categories" class="quick-action">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                <div class="quick-action-text">Manage Categories</div>
+                            </a>
                             <a href="${pageContext.request.contextPath}/admin/orders" class="quick-action">
                                 <div class="quick-action-icon">
                                     <i class="fas fa-shopping-cart"></i>
@@ -588,11 +616,11 @@
                                 </div>
                                 <div class="quick-action-text">Categories</div>
                             </a>
-                            <a href="${pageContext.request.contextPath}/" class="quick-action">
+                            <a href="${pageContext.request.contextPath}/?view=home" class="quick-action">
                                 <div class="quick-action-icon">
                                     <i class="fas fa-globe"></i>
                                 </div>
-                                <div class="quick-action-text">View Website</div>
+                                <div class="quick-action-text">Xem Website</div>
                             </a>
                         </div>
                     </div>

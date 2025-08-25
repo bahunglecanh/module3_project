@@ -206,6 +206,11 @@
             color: var(--danger-red);
         }
 
+        .status-banned {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+
         .role-badge {
             padding: 6px 12px;
             border-radius: 20px;
@@ -224,19 +229,37 @@
             color: var(--primary-purple);
         }
 
-        .btn-delete {
-            width: 32px;
-            height: 32px;
+        .btn-action {
+            padding: 6px 12px;
             border: none;
             border-radius: 6px;
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger-red);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-right: 6px;
         }
 
-        .btn-delete:hover {
+        .btn-ban {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-red);
+        }
+
+        .btn-ban:hover {
             background: var(--danger-red);
+            color: var(--white);
+        }
+
+        .btn-unban {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-green);
+        }
+
+        .btn-unban:hover {
+            background: var(--success-green);
             color: var(--white);
         }
 
@@ -330,12 +353,19 @@
             </div>
         </c:if>
 
+        <c:if test="${successMessage != null}">
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                ${successMessage}
+            </div>
+        </c:if>
+
         <!-- Search Section -->
         <div class="search-section">
             <form action="${pageContext.request.contextPath}/admin/listuser" method="get" class="search-form">
                 <input type="hidden" name="action" value="search">
                 <input type="text" name="search" class="search-input"
-                       placeholder="Tìm kiếm theo tên hoặc email..."
+                       placeholder="Tìm kiếm theo tên "
                        value="${searchTerm}">
                 <button type="submit" class="btn-search">
                     <i class="fas fa-search"></i> Tìm kiếm
@@ -355,7 +385,7 @@
                             Kết quả tìm kiếm: "${searchTerm}"
                         </c:when>
                         <c:otherwise>
-                            Danh sách Users (UserDTO)
+                            Danh sách Users
                         </c:otherwise>
                     </c:choose>
                 </h5>
@@ -383,6 +413,7 @@
                                 <th>Phone</th>
                                 <th>Gender</th>
                                 <th>Ngày tạo</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -426,8 +457,12 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="status-badge ${user.status == 'ACTIVE' ? 'status-active' : 'status-inactive'}">
-                                            ${user.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động'}
+                                        <span class="status-badge ${user.status == 'ACTIVE' ? 'status-active' : (user.status == 'BANNED' ? 'status-banned' : 'status-inactive')}">
+                                            <c:choose>
+                                                <c:when test="${user.status == 'ACTIVE'}">Hoạt động</c:when>
+                                                <c:when test="${user.status == 'BANNED'}">Đã ban</c:when>
+                                                <c:otherwise>Không hoạt động</c:otherwise>
+                                            </c:choose>
                                         </span>
                                     </td>
                                     <td>
@@ -453,6 +488,26 @@
                                     <td>
                                         <c:if test="${user.createdAt != null}">
                                             <fmt:formatDate value="${user.createdAt}" pattern="dd/MM/yyyy HH:mm"/>
+                                        </c:if>
+                                    </td>
+                                    <td>
+                                        <c:if test="${user.role != 'ADMIN'}">
+                                            <c:choose>
+                                                <c:when test="${user.status == 'ACTIVE'}">
+                                                    <a href="${pageContext.request.contextPath}/admin/listuser?action=ban&userId=${user.id}" 
+                                                       class="btn-action btn-ban"
+                                                       onclick="return confirm('Bạn có chắc muốn ban user này?')">
+                                                        <i class="fas fa-ban"></i> Ban
+                                                    </a>
+                                                </c:when>
+                                                <c:when test="${user.status == 'BANNED'}">
+                                                    <a href="${pageContext.request.contextPath}/admin/listuser?action=unban&userId=${user.id}" 
+                                                       class="btn-action btn-unban"
+                                                       onclick="return confirm('Bạn có chắc muốn unban user này?')">
+                                                        <i class="fas fa-check"></i> Unban
+                                                    </a>
+                                                </c:when>
+                                            </c:choose>
                                         </c:if>
                                     </td>
                                 </tr>
