@@ -70,7 +70,7 @@ public class HomeController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
         }
-        
+
         // Get any message from URL parameters
         String message = request.getParameter("message");
         if (message != null && !message.trim().isEmpty()) {
