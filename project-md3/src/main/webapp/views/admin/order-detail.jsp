@@ -4,6 +4,12 @@
 <head>
   <title>Chi tiết Đơn hàng #${order.orderId}</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script>
+    function showStatusForm() {
+      document.getElementById('statusForm').style.display = 'block';
+      document.getElementById('editBtn').style.display = 'none';
+    }
+  </script>
 </head>
 <body class="bg-light">
 
@@ -56,13 +62,34 @@
     </div>
   </div>
 
-  <!-- Tổng tiền và cập nhật trạng thái -->
+  <!-- Tổng tiền và trạng thái -->
   <div class="card mb-3">
     <div class="card-header bg-secondary text-white">Quản lý đơn hàng</div>
     <div class="card-body">
+      <!-- Tổng tiền -->
       <p><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">${order.totalAmount} đ</span></p>
 
-      <form method="post" class="mt-3">
+      <!-- Trạng thái hiện tại -->
+      <p><strong>Trạng thái hiện tại:</strong>
+        <span class="badge
+          <c:choose>
+            <c:when test="${order.orderStatus == 'pending'}">bg-secondary</c:when>
+            <c:when test="${order.orderStatus == 'confirmed'}">bg-info text-dark</c:when>
+            <c:when test="${order.orderStatus == 'shipped'}">bg-primary</c:when>
+            <c:when test="${order.orderStatus == 'delivered'}">bg-success</c:when>
+            <c:when test="${order.orderStatus == 'cancelled'}">bg-danger</c:when>
+            <c:otherwise>bg-secondary</c:otherwise>
+          </c:choose>
+        ">
+          ${order.orderStatus}
+        </span>
+      </p>
+
+      <!-- Nút Edit trạng thái -->
+      <button id="editBtn" class="btn btn-primary" onclick="showStatusForm()">Edit trạng thái</button>
+
+      <!-- Form cập nhật trạng thái (ẩn ban đầu) -->
+      <form id="statusForm" method="post" style="display:none;" class="mt-3">
         <input type="hidden" name="orderId" value="${order.orderId}" />
         <div class="mb-3">
           <label for="status" class="form-label">Cập nhật trạng thái:</label>
@@ -74,7 +101,7 @@
             <option value="cancelled" ${order.orderStatus == 'cancelled' ? 'selected' : ''}>Cancelled</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-success">Cập nhật trạng thái</button>
+        <button type="submit" class="btn btn-success">Cập nhật</button>
         <a href="<c:url value='/admin/order' />" class="btn btn-secondary">Quay lại</a>
       </form>
     </div>
