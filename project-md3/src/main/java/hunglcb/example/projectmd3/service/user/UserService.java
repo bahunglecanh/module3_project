@@ -88,6 +88,14 @@ public class UserService implements IUserService {
         public List<UserDTO> findAllUsers() {
             return userRepository.findAllUser();
         }
+    
+    @Override
+    public boolean updatePasswordByEmail(String email, String newPasswordHash) {
+        if (email == null || email.trim().isEmpty() || newPasswordHash == null || newPasswordHash.trim().isEmpty()) {
+            return false;
+        }
+        return userRepository.updatePasswordByEmail(email.trim(), newPasswordHash.trim());
     }
+}
 
 

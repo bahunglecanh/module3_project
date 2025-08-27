@@ -15,5 +15,6 @@ public interface IUserService {
     User findById(int id);
     boolean updateUser(User user);
     List<UserDTO> findAllUsers();
+    boolean updatePasswordByEmail(String email, String newPasswordHash);
 
 }

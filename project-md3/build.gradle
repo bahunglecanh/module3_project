@@ -27,6 +27,8 @@ dependencies {
   implementation("javax.servlet:jstl:1.2")
   // https://mvnrepository.com/artifact/mysql/mysql-connector-java
   implementation("mysql:mysql-connector-java:8.0.28")
+  // Email sending
+  implementation("com.sun.mail:javax.mail:1.6.2")
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }

@@ -17,4 +17,5 @@ public interface IUserRepository {
     boolean saveUser(User user);
     boolean updateUser(User user);
     boolean deleteAccount(int userId);
+    boolean updatePasswordByEmail(String email, String newPasswordHash);
 }

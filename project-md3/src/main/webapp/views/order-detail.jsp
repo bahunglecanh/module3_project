@@ -19,11 +19,11 @@
             font-size: 0.9rem;
             padding: 0.5rem 1rem;
         }
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-confirmed { background-color: #d1ecf1; color: #0c5460; }
-        .status-shipped { background-color: #d4edda; color: #155724; }
-        .status-delivered { background-color: #c3e6cb; color: #155724; }
-        .status-cancelled { background-color: #f8d7da; color: #721c24; }
+        .status-pending { background-color: #caca5c; color: #856404; }
+        .status-confirmed { background-color: #52bc52; color: #0c5460; }
+        .status-shipped { background-color: #3a526a; color: #155724; }
+        .status-delivered { background-color: #a38329; color: #155724; }
+        .status-cancelled { background-color: #c53636; color: #721c24; }
         .product-image {
             width: 80px;
             height: 80px;
