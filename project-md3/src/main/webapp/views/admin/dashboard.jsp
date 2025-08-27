@@ -430,16 +430,16 @@
                 </div>
 
                 <div class="nav-item">
-                    <a href="/admin/order" class="nav-link">
+                    <a href="${pageContext.request.contextPath}/admin/products" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-box"></i></span>
-                        <span class="nav-text">View Orders</span>
+                        <span class="nav-text">Product</span>
                     </a>
                 </div>
 
                 <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/cart" class="nav-link">
+                    <a href="/admin/order" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
-                        <span class="nav-text">Giỏ hàng</span>
+                        <span class="nav-text">View Orders</span>
                     </a>
                 </div>
 
@@ -576,7 +576,7 @@
                                 </div>
                                 <div class="quick-action-text">Manage Products</div>
                             </a>
-                            <a href="${pageContext.request.contextPath}/admin/orders" class="quick-action">
+                            <a href="/admin/order" class="quick-action">
                                 <div class="quick-action-icon">
                                     <i class="fas fa-shopping-cart"></i>
                                 </div>

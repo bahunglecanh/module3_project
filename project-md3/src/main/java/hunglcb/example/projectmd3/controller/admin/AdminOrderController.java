@@ -21,7 +21,7 @@ public class AdminOrderController extends HttpServlet {
         try {
             List<CustomerOrderDTO> orders = orderService.getAllOrders();
             req.setAttribute("orders", orders);
-            req.getRequestDispatcher("/views/admin/order.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/admin/order-list.jsp").forward(req, resp);
         } catch (SQLException e) {
             throw new ServletException(e);
         }
