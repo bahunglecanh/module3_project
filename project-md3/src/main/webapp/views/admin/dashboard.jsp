@@ -407,7 +407,7 @@
                         <i class="fas fa-gem"></i>
                     </div>
                     <div class="logo-text">
-                        <div class="logo-title">VENUS</div>
+                        <div class="logo-title">ADMIN</div>
                         <div class="logo-subtitle">DASHBOARD</div>
                     </div>
                 </a>
@@ -430,9 +430,9 @@
                 </div>
 
                 <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/products" class="nav-link">
+                    <a href="/admin/order" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-box"></i></span>
-                        <span class="nav-text">Product</span>
+                        <span class="nav-text">View Orders</span>
                     </a>
                 </div>
 

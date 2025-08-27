@@ -3,10 +3,10 @@ package hunglcb.example.projectmd3.controller;
 import hunglcb.example.projectmd3.model.Category;
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.service.IProductService;
-import hunglcb.example.projectmd3.service.ICategoryService;
-import hunglcb.example.projectmd3.service.ProductService;
-import hunglcb.example.projectmd3.service.CategoryService;
+import hunglcb.example.projectmd3.service.product.IProductService;
+import hunglcb.example.projectmd3.service.category.ICategoryService;
+import hunglcb.example.projectmd3.service.product.ProductService;
+import hunglcb.example.projectmd3.service.category.CategoryService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

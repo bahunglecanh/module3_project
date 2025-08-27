@@ -54,7 +54,7 @@ public class Order {
         this.status = status;
     }
 
-    public double getTotalAmount() {
+    public double getTotalAmount(double aDouble) {
         return totalAmount;
     }
 
@@ -62,7 +62,7 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-    public Date getCreatedAt() {
+    public Date getCreatedAt(java.sql.Date createAt) {
         return createdAt;
     }
 

@@ -1,8 +1,8 @@
 package hunglcb.example.projectmd3.filter;
 
 import hunglcb.example.projectmd3.model.User;
-import hunglcb.example.projectmd3.service.IUserService;
-import hunglcb.example.projectmd3.service.UserService;
+import hunglcb.example.projectmd3.service.user.IUserService;
+import hunglcb.example.projectmd3.service.user.UserService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
