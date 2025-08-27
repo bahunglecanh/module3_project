@@ -206,29 +206,30 @@
 
 
 
-        <!-- Form Section -->
+
         <div class="form-section">
-            <form method="post" action="${pageContext.request.contextPath}/admin/categories">
+            <form method="post" action="${pageContext.request.contextPath}/admin/categories" onsubmit="return checkValidate()">
                 <input type="hidden" name="action" value="${action}">
                 <c:if test="${action == 'edit'}">
                     <input type="hidden" name="id" value="${category.id}">
                 </c:if>
 
-                <!-- Category Name -->
                 <div class="mb-3">
                     <label for="name" class="form-label">Tên danh mục</label>
-                    <input type="text" class="form-control" id="name" name="name" 
+                    <input type="text"class="form-control" id="name" name="name"
                            value="${category.name}" placeholder="Nhập tên danh mục">
+                    <small id="nameError"></small>
+
                 </div>
 
-                <!-- Description -->
                 <div class="mb-3">
                     <label for="description" class="form-label">Mô tả</label>
-                    <textarea class="form-control" id="description" name="description" 
+                    <textarea class="form-control" o id="description" name="description"
                               rows="3" placeholder="Nhập mô tả">${category.description}</textarea>
+                    <small id="descriptionError"></small>
+
                 </div>
 
-                <!-- Form Buttons -->
                 <div class="form-buttons">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Lưu
@@ -241,11 +242,34 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Basic functionality only
+     function checkValidate(){
+         let name = document.getElementById("name").value;
+         let description = document.getElementById("description").value;
+         let isValidate = true;
+         if (name == ""){
+             document.getElementById("nameError").innerHTML = "Tên không được để trống";
+            isValidate = false;
+         }
+         else {
+             document.getElementById("nameError").innerHTML= "";
+             isValidate = true;
+         }
+
+         if (description == ""){
+             document.getElementById("descriptionError").innerHTML = "Mô tả không được để trống";
+             isValidate = false;
+         }
+         else {
+             document.getElementById("descriptionError").innerHTML= "";
+             isValidate = true;
+         }
+
+         return isValidate;
+
+     }
     </script>
 </body>
 </html>
