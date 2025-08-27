@@ -14,4 +14,6 @@ public interface IOrderRepository {
     boolean updateStatus(Integer orderId, String status);
     List<CustomerOrderDTO> findAllOrders() throws SQLException;
     List<OrderItemDTO> findOrderItemsByOrderId(Long orderId) throws SQLException;
+    CustomerOrderDTO findOrderById(Long orderId) throws SQLException;
+    boolean updateOrderStatus(Long orderId, String status) throws SQLException;
 }

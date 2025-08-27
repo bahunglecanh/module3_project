@@ -138,5 +138,54 @@ public class OrderRepository implements IOrderRepository {
         }
         return items;
     }
+
+    @Override
+    public boolean updateOrderStatus(Long orderId, String status) throws SQLException {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        try (Connection conn = ConnectionDB.getConnectDB();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            pstmt.setLong(2, orderId);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    @Override
+    public CustomerOrderDTO findOrderById(Long orderId) throws SQLException {
+        String sql = "SELECT o.id AS order_id, o.status AS order_status, o.total_amount, o.created_at AS order_date, " +
+                "a.id AS account_id, a.email, up.full_name, up.phone, " +
+                "ua.address_line, ua.city, ua.state, ua.postal_code, ua.country " +
+                "FROM orders o " +
+                "JOIN accounts a ON o.account_id = a.id " +
+                "LEFT JOIN user_profiles up ON a.id = up.account_id " +
+                "LEFT JOIN user_addresses ua ON o.shipping_address_id = ua.id " +
+                "WHERE o.id = ?";
+
+        CustomerOrderDTO order = null;
+        try (Connection conn = ConnectionDB.getConnectDB();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, orderId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                order = new CustomerOrderDTO();
+                order.setOrderId(rs.getLong("order_id"));
+                order.setOrderStatus(rs.getString("order_status"));
+                order.setTotalAmount(rs.getBigDecimal("total_amount"));
+                order.setOrderDate(rs.getTimestamp("order_date").toLocalDateTime());
+                order.setAccountId(rs.getLong("account_id"));
+                order.setEmail(rs.getString("email"));
+                order.setFullName(rs.getString("full_name"));
+                order.setPhone(rs.getString("phone"));
+                order.setAddressLine(rs.getString("address_line"));
+                order.setCity(rs.getString("city"));
+                order.setState(rs.getString("state"));
+                order.setPostalCode(rs.getString("postal_code"));
+                order.setCountry(rs.getString("country"));
+
+                order.setItems(findOrderItemsByOrderId(order.getOrderId()));
+            }
+        }
+        return order;
+    }
 }
 

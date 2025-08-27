@@ -43,5 +43,19 @@ public class OrderService implements IOrderService {
     public List<CustomerOrderDTO> getAllOrders() throws SQLException {
         return orderRepository.findAllOrders();
     }
+
+    @Override
+    public boolean updateOrderStatus(Long orderId, String status) throws SQLException {
+        // Validate trạng thái hợp lệ
+        if (!status.matches("pending|confirmed|shipped|delivered|cancelled")) {
+            throw new IllegalArgumentException("Trạng thái đơn hàng không hợp lệ!");
+        }
+        return orderRepository.updateOrderStatus(orderId, status);
+    }
+
+    @Override
+    public CustomerOrderDTO getOrderById(Long orderId) throws SQLException {
+        return orderRepository.findOrderById(orderId);
+    }
 }
 

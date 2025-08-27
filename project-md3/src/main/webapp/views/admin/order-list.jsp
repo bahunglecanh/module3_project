@@ -10,6 +10,10 @@
 <div class="container mt-4">
     <h2 class="mb-4">Danh sách Đơn hàng</h2>
 
+    <c:if test="${not empty errorMessage}">
+        <div class="alert alert-danger">${errorMessage}</div>
+    </c:if>
+
     <c:forEach var="order" items="${orders}">
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-primary text-white">
@@ -18,41 +22,14 @@
                 Trạng thái: <span class="badge bg-warning text-dark">${order.orderStatus}</span>
             </div>
             <div class="card-body">
-                <!-- Thông tin khách hàng -->
                 <p><strong>Khách hàng:</strong> ${order.fullName} (${order.email})</p>
                 <p><strong>SĐT:</strong> ${order.phone}</p>
-                <p><strong>Địa chỉ giao hàng:</strong>
-                        ${order.addressLine}, ${order.city}, ${order.state}, ${order.postalCode}, ${order.country}
-                </p>
-                <p><strong>Tổng tiền:</strong>
-                    <span class="text-danger fw-bold">${order.totalAmount} đ</span>
-                </p>
+                <p><strong>Địa chỉ:</strong> ${order.addressLine}, ${order.city}, ${order.state}, ${order.postalCode}, ${order.country}</p>
+                <p><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">${order.totalAmount} đ</span></p>
 
-                <!-- Chi tiết sản phẩm -->
-                <table class="table table-bordered table-hover mt-3">
-                    <thead class="table-light">
-                    <tr>
-                        <th>Ảnh</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Size</th>
-                        <th>Số lượng</th>
-                        <th>Giá</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach var="item" items="${order.items}">
-                        <tr>
-                            <td style="width:80px">
-                                <img src="${item.imageUrl}" alt="${item.productName}" class="img-fluid rounded" style="max-height:60px;">
-                            </td>
-                            <td>${item.productName}</td>
-                            <td>${item.size}</td>
-                            <td>${item.quantity}</td>
-                            <td>${item.price} đ</td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
+                <!-- Nút xem chi tiết -->
+                <a href="<c:url value='/admin/order/detail?id=${order.orderId}' />"
+                   class="btn btn-primary btn-sm mt-2">Xem chi tiết</a>
             </div>
         </div>
     </c:forEach>

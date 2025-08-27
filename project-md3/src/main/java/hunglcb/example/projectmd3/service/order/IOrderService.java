@@ -12,4 +12,6 @@ public interface IOrderService {
     Integer prepareOrderPendingPayment(Integer accountId, Integer shippingAddressId, Integer paymentMethodId, BigDecimal totalAmount);
     boolean finalizePaidOrder(Integer orderId);
     List<CustomerOrderDTO> getAllOrders() throws SQLException;
+    CustomerOrderDTO getOrderById(Long orderId) throws SQLException;
+    boolean updateOrderStatus(Long orderId, String status) throws SQLException;
 }

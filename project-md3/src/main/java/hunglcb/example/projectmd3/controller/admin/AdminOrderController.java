@@ -25,5 +25,7 @@ public class AdminOrderController extends HttpServlet {
         } catch (SQLException e) {
             throw new ServletException(e);
         }
+
     }
+
 }
