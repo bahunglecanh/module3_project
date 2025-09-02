@@ -38,18 +38,16 @@ public class DashboardController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            // Get statistics
             Map<String, Object> stats = new HashMap<>();
             stats.put("totalUsers", userService.getTotalUsersCount());
             stats.put("totalProducts", productService.getTotalProductsCount());
             stats.put("totalCategories", categoryService.getAllCategories().size());
-            stats.put("totalOrders", 0); // Placeholder for orders
+            stats.put("totalOrders", 0);
             
             request.setAttribute("stats", stats);
             
         } catch (Exception e) {
             e.printStackTrace();
-            // Set default values if error occurs
             Map<String, Object> stats = new HashMap<>();
             stats.put("totalUsers", 0);
             stats.put("totalProducts", 0);

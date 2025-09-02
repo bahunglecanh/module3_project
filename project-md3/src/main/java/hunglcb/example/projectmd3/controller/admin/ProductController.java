@@ -46,7 +46,6 @@ public class ProductController extends HttpServlet {
         String action = request.getParameter("action");
         
         if (action == null) {
-            // Display product list
             showProductList(request, response);
         } else {
             switch (action) {

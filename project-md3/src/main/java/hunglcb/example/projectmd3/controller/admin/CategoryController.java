@@ -71,6 +71,9 @@ public class CategoryController extends HttpServlet {
             case "edit":
                 handleEditCategory(request, response);
                 break;
+            case "delete":
+                handleDeleteCategory(request, response);
+                break;
             default:
                 response.sendRedirect(request.getContextPath() + "/admin/categories");
                 break;

@@ -210,7 +210,7 @@
 
         <!-- Form Section -->
         <div class="form-section">
-            <form method="post" action="${pageContext.request.contextPath}/admin/products">
+            <form method="post" action="/admin/products" onsubmit="return checkValidate()">
                 <input type="hidden" name="action" value="${action}">
                 <c:if test="${action == 'edit' && product != null}">
                     <input type="hidden" name="id" value="${product.id}">
@@ -221,15 +221,17 @@
                         <!-- Product Name -->
                         <div class="mb-3">
                             <label for="name" class="form-label">Tên sản phẩm</label>
-                            <input type="text" class="form-control" id="name" name="name" 
+                            <input type="text"class="form-control" id="name" name="name" 
                                    value="${product.name}" placeholder="Nhập tên sản phẩm">
+                            <small id="nameError"></small>
                         </div>
 
                         <!-- Description -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Mô tả</label>
-                            <textarea class="form-control" id="description" name="description" 
+                            <textarea class="form-control" o id="description" name="description" 
                                       rows="3" placeholder="Nhập mô tả">${product.description}</textarea>
+                            <small id="descriptionError"></small>
                         </div>
 
                         <!-- Price -->
@@ -237,6 +239,7 @@
                             <label for="price" class="form-label">Giá bán</label>
                             <input type="number" class="form-control" id="price" name="price" 
                                    value="${product.price}" min="0" placeholder="0">
+                            <small id="priceError"></small>
                         </div>
 
                         <!-- Stock Quantity -->
@@ -244,6 +247,7 @@
                             <label for="stockQuantity" class="form-label">Số lượng</label>
                             <input type="number" class="form-control" id="stockQuantity" name="stockQuantity" 
                                    value="${product.stockQuantity}" min="0" placeholder="0">
+                            <small id="stockQuantityError"></small>
                         </div>
                     </div>
 
@@ -259,6 +263,7 @@
                                     </option>
                                 </c:forEach>
                             </select>
+                            <small id="categoryIdError"></small>
                         </div>
 
                         <!-- Brand -->
@@ -272,6 +277,7 @@
                                     </option>
                                 </c:forEach>
                             </select>
+                            <small id="brandIdError"></small>
                         </div>
 
                         <!-- Image URL -->
@@ -279,6 +285,7 @@
                             <label for="imageUrl" class="form-label">Hình ảnh</label>
                             <input type="url" class="form-control" id="imageUrl" name="imageUrl" 
                                    value="${product.imageUrl}" placeholder="URL hình ảnh">
+                            <small id="imageUrlError"></small>
                         </div>
                     </div>
                 </div>
@@ -300,7 +307,81 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        function checkValidate(){
+            let name = document.getElementById("name").value;
+            let description = document.getElementById("description").value;
+            let price = document.getElementById("price").value;
+            let stockQuantity = document.getElementById("stockQuantity").value;
+            let categoryId = document.getElementById("categoryId").value;
+            let brandId = document.getElementById("brandId").value;
+            let imageUrl = document.getElementById("imageUrl").value;
+            let isValidate = true;
+            
+            if (name == ""){
+                document.getElementById("nameError").innerHTML = "Tên sản phẩm không được để trống";
+                isValidate = false;
+            }
+            else {
+                document.getElementById("nameError").innerHTML= "";
+                isValidate = true;
+            }
 
+            if (description == ""){
+                document.getElementById("descriptionError").innerHTML = "Mô tả không được để trống";
+                isValidate = false;
+            }
+            else {
+                document.getElementById("descriptionError").innerHTML= "";
+                isValidate = true;
+            }
+
+            if (price == "" || price <= 0){
+                document.getElementById("priceError").innerHTML = "Giá bán phải lớn hơn 0";
+                isValidate = false;
+            }
+            else {
+                document.getElementById("priceError").innerHTML= "";
+                isValidate = true;
+            }
+
+            if (stockQuantity == "" || stockQuantity < 0){
+                document.getElementById("stockQuantityError").innerHTML = "Số lượng phải lớn hơn hoặc bằng 0";
+                isValidate = false;
+            }
+            else {
+                document.getElementById("stockQuantityError").innerHTML= "";
+                isValidate = true;
+            }
+
+            if (categoryId == ""){
+                document.getElementById("categoryIdError").innerHTML = "Vui lòng chọn danh mục";
+                isValidate = false;
+            }
+            else {
+                document.getElementById("categoryIdError").innerHTML= "";
+                isValidate = true;
+            }
+
+            if (brandId == ""){
+                document.getElementById("brandIdError").innerHTML = "Vui lòng chọn thương hiệu";
+                isValidate = false;
+            }
+            else {
+                document.getElementById("brandIdError").innerHTML= "";
+                isValidate = true;
+            }
+
+            if (imageUrl == ""){
+                document.getElementById("imageUrlError").innerHTML = "URL hình ảnh không được để trống";
+                isValidate = false;
+            }
+            else {
+                document.getElementById("imageUrlError").innerHTML= "";
+                isValidate = true;
+            }
+
+            return isValidate;
+        }
 
     </script>
 </body>

@@ -422,19 +422,15 @@
                                         </c:choose>
                                     </td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}/product-detail?id=${product.id}" 
-                                           class="btn-action btn-view" target="_blank">
-                                            <i class="fas fa-eye"></i> Xem
-                                        </a>
                                         <a href="${pageContext.request.contextPath}/admin/products?action=edit&id=${product.id}" 
                                            class="btn-action btn-edit">
                                             <i class="fas fa-edit"></i> Sửa
                                         </a>
-                                        <a href="${pageContext.request.contextPath}/admin/products?action=delete&id=${product.id}" 
-                                           class="btn-action btn-delete"
-                                           onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                                        <button type="button" class="btn-action btn-delete"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                onclick="getInfoDelete(${product.id}, '${product.name}')">
                                             <i class="fas fa-trash"></i> Xóa
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -457,11 +453,40 @@
         </div>
     </div>
 
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="${pageContext.request.contextPath}/admin/products?action=delete" method="post">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Xóa sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <input hidden="hidden" id="deleteId" name="id">
+                        <span>Bạn có muốn xóa sản phẩm </span>
+                        <span style="color: red" id="deleteName"></span>
+                        <span> không???</span>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // No validation
+        function getInfoDelete(id, name) {
+            document.getElementById("deleteName").innerText = name;
+            document.getElementById("deleteId").value = id;
+        }
     </script>
 </body>
 </html>
