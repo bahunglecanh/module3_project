@@ -209,33 +209,6 @@ public class OrderRepository implements IOrderRepository {
         return order;
     }
 
-    private UserAddress getShippingAddressById(Integer addressId) {
-        String sql = "SELECT * FROM user_addresses WHERE id = ?";
-        try (Connection conn = ConnectionDB.getConnectDB();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, addressId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                UserAddress address = new UserAddress();
-                address.setId(rs.getInt("id"));
-                address.setAccountId(rs.getInt("account_id"));
-                address.setAddressLine(rs.getString("address_line"));
-                address.setCity(rs.getString("city"));
-                address.setState(rs.getString("state"));
-                address.setPostalCode(rs.getString("postal_code"));
-                address.setCountry(rs.getString("country"));
-                address.setIsDefault(rs.getBoolean("is_default"));
-                address.setCreatedAt(rs.getTimestamp("created_at"));
-                return address;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-}
-
     @Override
     public List<CustomerOrderDTO> findAllOrders() throws SQLException {
         String sql = "SELECT o.id AS order_id, o.status AS order_status, o.total_amount, o.created_at AS order_date, " +
@@ -249,7 +222,7 @@ public class OrderRepository implements IOrderRepository {
 
         List<CustomerOrderDTO> orders = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnectDB();
-            Statement stmt = conn.createStatement();
+             Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
@@ -286,8 +259,7 @@ public class OrderRepository implements IOrderRepository {
                 "WHERE oi.order_id = ?";
         List<OrderItemDTO> items = new ArrayList<>();
         try (Connection conn = ConnectionDB.getConnectDB();
-
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, orderId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -308,7 +280,7 @@ public class OrderRepository implements IOrderRepository {
     public boolean updateOrderStatus(Long orderId, String status) throws SQLException {
         String sql = "UPDATE orders SET status = ? WHERE id = ?";
         try (Connection conn = ConnectionDB.getConnectDB();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, status);
             pstmt.setLong(2, orderId);
             return pstmt.executeUpdate() > 0;
@@ -328,7 +300,7 @@ public class OrderRepository implements IOrderRepository {
 
         CustomerOrderDTO order = null;
         try (Connection conn = ConnectionDB.getConnectDB();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, orderId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -351,6 +323,33 @@ public class OrderRepository implements IOrderRepository {
             }
         }
         return order;
+    }
+
+    @Override
+    public UserAddress getShippingAddressById(Integer addressId) {
+        String sql = "SELECT * FROM user_addresses WHERE id = ?";
+        try (Connection conn = ConnectionDB.getConnectDB();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, addressId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                UserAddress address = new UserAddress();
+                address.setId(rs.getInt("id"));
+                address.setAccountId(rs.getInt("account_id"));
+                address.setAddressLine(rs.getString("address_line"));
+                address.setCity(rs.getString("city"));
+                address.setState(rs.getString("state"));
+                address.setPostalCode(rs.getString("postal_code"));
+                address.setCountry(rs.getString("country"));
+                address.setIsDefault(rs.getBoolean("is_default"));
+                address.setCreatedAt(rs.getTimestamp("created_at"));
+                return address;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

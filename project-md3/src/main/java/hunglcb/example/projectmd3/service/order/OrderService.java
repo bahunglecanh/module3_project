@@ -128,7 +128,6 @@ public class OrderService implements IOrderService {
         // Admin marks order as delivered (changes from shipped to delivered)
         return orderRepository.updateStatus(orderId, "delivered");
     }
-}
 
     @Override
     public CustomerOrderDTO getOrderById(Long orderId) throws SQLException {

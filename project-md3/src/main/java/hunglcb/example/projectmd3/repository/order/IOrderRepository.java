@@ -2,6 +2,7 @@ package hunglcb.example.projectmd3.repository.order;
 
 import hunglcb.example.projectmd3.model.Order;
 import hunglcb.example.projectmd3.model.OrderItem;
+import hunglcb.example.projectmd3.model.UserAddress;
 
 import hunglcb.example.projectmd3.dto.CustomerOrderDTO;
 import hunglcb.example.projectmd3.dto.OrderItemDTO;
@@ -26,6 +27,9 @@ public interface IOrderRepository {
     List<OrderItemDTO> findOrderItemsByOrderId(Long orderId) throws SQLException;
     CustomerOrderDTO findOrderById(Long orderId) throws SQLException;
     boolean updateOrderStatus(Long orderId, String status) throws SQLException;
+
+    // Utility methods
+    UserAddress getShippingAddressById(Integer addressId);
 }
 
 

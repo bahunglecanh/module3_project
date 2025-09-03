@@ -33,8 +33,6 @@ public class Order {
             this.value = value;
             this.displayName = displayName;
         }
-    public Order() {
-    }
 
         public String getValue() {
             return value;
