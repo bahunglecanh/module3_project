@@ -23,6 +23,8 @@ public class ForgotPasswordController extends HttpServlet {
         userService = new UserService();
         passwordResetService = new PasswordResetService(userService);
     }
+    
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -83,6 +85,7 @@ public class ForgotPasswordController extends HttpServlet {
         if (ok) {
             request.setAttribute("email", email.trim());
             request.setAttribute("message", "Đã gửi OTP đến email. Vui lòng kiểm tra hộp thư.");
+            request.setAttribute("otpExpiryTime", passwordResetService.getOtpExpiryTime(email.trim()));
             request.getRequestDispatcher("/views/auth/verify-otp.jsp").forward(request, response);
         } else {
             request.setAttribute("errorMessage", "Không thể gửi OTP. Thử lại sau.");

@@ -23,6 +23,8 @@ public class EmailService implements IEmailService {
         this.password = getConfig(fileProps, "smtp.password", "SMTP_PASSWORD", "");
         this.useTls = Boolean.parseBoolean(getConfig(fileProps, "smtp.tls", "SMTP_TLS", "true"));
         this.fromName = getConfig(fileProps, "smtp.fromName", "SMTP_FROM_NAME", "Shoe Store");
+        
+
     }
 
     @Override
@@ -33,7 +35,15 @@ public class EmailService implements IEmailService {
             props.put("mail.smtp.starttls.enable", String.valueOf(useTls));
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", smtpPort);
-
+            
+            // Add timeout settings to avoid hanging
+            props.put("mail.smtp.timeout", "10000"); // 10 seconds
+            props.put("mail.smtp.connectiontimeout", "10000"); // 10 seconds
+            
+            // Fix encoding issues for Vietnamese characters
+            props.put("mail.mime.charset", "UTF-8");
+            props.put("mail.mime.encoding", "UTF-8");
+            
             Session session = Session.getInstance(props, new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(username, password);
@@ -45,9 +55,14 @@ public class EmailService implements IEmailService {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject(subject);
             message.setContent(htmlContent, "text/html; charset=UTF-8");
+            
+            // Set additional headers for proper encoding
+            message.setHeader("Content-Type", "text/html; charset=UTF-8");
+            message.setHeader("Content-Transfer-Encoding", "8bit");
 
             Transport.send(message);
             return true;
+            
         } catch (Exception e) {
             e.printStackTrace();
             return false;

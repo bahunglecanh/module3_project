@@ -17,6 +17,8 @@ public class PasswordResetService implements IPasswordResetService {
         this.userService = userService;
         this.emailService = new EmailService();
     }
+    
+
 
     @Override
     public boolean requestOtp(String email) {
@@ -27,16 +29,13 @@ public class PasswordResetService implements IPasswordResetService {
         LocalDateTime expires = LocalDateTime.now().plusMinutes(5);
         boolean stored = repository.createOrUpdateOtp(email.trim(), otp, expires);
         if (!stored) return false;
-        String subject = "Code OTP đat lai mat khau";
+        String subject = "Code OTP Reset Password";
         String html = "<p>Xin chào,</p>" +
                 "<p>Mã OTP của bạn là: <b>" + otp + "</b></p>" +
                 "<p>OTP sẽ hết hạn lúc: " + expires + "</p>" +
                 "<p>Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>";
         boolean sent = emailService.send(email.trim(), subject, html);
-        if (!sent) {
-            // fallback: vẫn cho tiến trình tiếp tục để dev có thể test qua console
-            System.out.println("[OTP] Send OTP to " + email + ": " + otp + " (expires at " + expires + ")");
-        }
+
         return sent || true;
     }
 
@@ -57,6 +56,11 @@ public class PasswordResetService implements IPasswordResetService {
         return updated;
     }
 
+    @Override
+    public LocalDateTime getOtpExpiryTime(String email) {
+        return repository.getExpiry(email);
+    }
+    
     private String generateOtp(int length) {
         SecureRandom random = new SecureRandom();
         String digits = "0123456789";

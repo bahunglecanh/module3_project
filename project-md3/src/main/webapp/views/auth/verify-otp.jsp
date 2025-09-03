@@ -29,6 +29,13 @@
                             <label for="otp" class="form-label">Mã OTP</label>
                             <input type="text" class="form-control" id="otp" name="otp" placeholder="Nhập mã gồm 6 số" required>
                         </div>
+                        
+                        <c:if test="${not empty otpExpiryTime}">
+                            <div class="form-text text-muted mb-3">
+                                <i class="fas fa-clock me-1"></i>
+                                OTP có hiệu lực đến: <strong>${otpExpiryTime}</strong>
+                            </div>
+                        </c:if>
 
                         <button type="submit" class="btn btn-primary auth-btn">Xác thực</button>
                     </form>
