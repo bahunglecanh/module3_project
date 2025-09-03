@@ -38,12 +38,6 @@ public class UserController extends HttpServlet {
             case "search":
                 searchUsers(request, response);
                 break;
-            case "ban":
-                banUser(request, response);
-                break;
-            case "unban":
-                unbanUser(request, response);
-                break;
             default:
                 showUserList(request, response);
                 break;
@@ -76,6 +70,33 @@ public class UserController extends HttpServlet {
         request.setAttribute("searchTerm", searchTerm.trim());
         
         request.getRequestDispatcher("/views/admin/listuser.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        String action = request.getParameter("action");
+        
+        if (action == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/listuser");
+            return;
+        }
+        
+        switch (action) {
+            case "ban":
+                banUser(request, response);
+                break;
+            case "unban":
+                unbanUser(request, response);
+                break;
+            default:
+                response.sendRedirect(request.getContextPath() + "/admin/listuser");
+                break;
+        }
     }
     
     private void banUser(HttpServletRequest request, HttpServletResponse response) 

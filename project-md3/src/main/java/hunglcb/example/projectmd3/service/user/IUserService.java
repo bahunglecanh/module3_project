@@ -19,4 +19,6 @@ public interface IUserService {
     boolean banUser(int userId);
     boolean unbanUser(int userId);
     int getTotalUsersCount();
+    boolean updatePasswordByEmail(String email, String newPasswordHash);
+
 }

@@ -492,4 +492,18 @@ public class UserRepository implements IUserRepository {
             return false;
         }
     }
+
+    @Override
+    public boolean updatePasswordByEmail(String email, String newPasswordHash) {
+        String sql = "UPDATE accounts SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ? AND status = 'active'";
+        try (Connection conn = ConnectionDB.getConnectDB();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newPasswordHash);
+            stmt.setString(2, email);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -64,8 +64,8 @@ public class HomeController extends HttpServlet {
         
         String viewParam = request.getParameter("view");
         boolean viewHome = "home".equals(viewParam);
-        
-        // Redirect admin users to admin dashboard (unless they explicitly want to view home)
+
+        //Nếu là admin và không có ?view=home return đến dashboard con` k thi` o lai trang chu
         if (currentUser != null && isAdmin && !viewHome) {
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;

@@ -93,6 +93,13 @@ public class UserService implements IUserService {
     public List<UserDTO> searchByName(String fullName) {
         return userRepository.searchByName(fullName);
     }
+    @Override
+    public boolean updatePasswordByEmail(String email, String newPasswordHash) {
+        if (email == null || email.trim().isEmpty() || newPasswordHash == null || newPasswordHash.trim().isEmpty()) {
+            return false;
+        }
+        return userRepository.updatePasswordByEmail(email.trim(), newPasswordHash.trim());
+    }
 
     @Override
     public boolean banUser(int userId) {
@@ -116,5 +123,6 @@ public class UserService implements IUserService {
         return users != null ? users.size() : 0;
     }
 }
+
 
 

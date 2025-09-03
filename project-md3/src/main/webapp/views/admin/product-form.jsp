@@ -229,7 +229,7 @@
                         <!-- Description -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Mô tả</label>
-                            <textarea class="form-control" o id="description" name="description" 
+                            <textarea class="form-control"  id="description" name="description"
                                       rows="3" placeholder="Nhập mô tả">${product.description}</textarea>
                             <small id="descriptionError"></small>
                         </div>
@@ -295,7 +295,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Lưu
                     </button>
-                    <a href="${pageContext.request.contextPath}/admin/products" class="btn btn-secondary">
+                    <a href="/admin/products" class="btn btn-secondary">
                         <i class="fas fa-times"></i> Hủy
                     </a>
                 </div>

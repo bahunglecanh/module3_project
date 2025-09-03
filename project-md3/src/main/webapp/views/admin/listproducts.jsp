@@ -338,7 +338,7 @@
         <div class="page-header">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h1 class="page-title">Quản lý Sản phẩm</h1>
-                <a href="${pageContext.request.contextPath}/admin/products?action=add" class="btn-add">
+                <a href="/admin/products?action=add" class="btn-add">
                     <i class="fas fa-plus"></i> Thêm sản phẩm
                 </a>
             </div>
@@ -422,7 +422,7 @@
                                         </c:choose>
                                     </td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}/admin/products?action=edit&id=${product.id}" 
+                                        <a href="/admin/products?action=edit&id=${product.id}"
                                            class="btn-action btn-edit">
                                             <i class="fas fa-edit"></i> Sửa
                                         </a>
@@ -456,7 +456,7 @@
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form action="${pageContext.request.contextPath}/admin/products?action=delete" method="post">
+            <form action="/admin/products?action=delete" method="post">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Xóa sản phẩm</h5>

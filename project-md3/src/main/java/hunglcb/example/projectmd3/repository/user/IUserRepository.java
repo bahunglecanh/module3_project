@@ -20,4 +20,5 @@ public interface IUserRepository {
     boolean deleteAccount(int userId);
     boolean banUser(int userId);
     boolean unbanUser(int userId);
+    boolean updatePasswordByEmail(String email, String newPasswordHash);
 }

@@ -19,16 +19,10 @@ import java.util.Map;
 @WebServlet(name = "AdminDashboardController", urlPatterns = {"/admin/dashboard"})
 public class DashboardController extends HttpServlet {
 
-    private IUserService userService;
-    private IProductService productService;
-    private ICategoryService categoryService;
-    
-    @Override
-    public void init() throws ServletException {
-        userService = new UserService();
-        productService = new ProductService();
-        categoryService = new CategoryService();
-    }
+    private IUserService userService = new UserService();
+    private IProductService productService = new ProductService();
+    private ICategoryService categoryService = new CategoryService();
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
