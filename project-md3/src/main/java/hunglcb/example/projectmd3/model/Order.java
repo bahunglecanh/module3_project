@@ -12,7 +12,7 @@ public class Order {
     private BigDecimal totalAmount;
     private Integer paymentMethodId;
     private Timestamp createdAt;
-    
+
     // Additional fields for display
     private User user;
     private UserAddress shippingAddress;
@@ -55,7 +55,7 @@ public class Order {
     // Constructors
     public Order() {}
 
-    public Order(Integer id, Integer accountId, Integer shippingAddressId, OrderStatus status, 
+    public Order(Integer id, Integer accountId, Integer shippingAddressId, OrderStatus status,
                  BigDecimal totalAmount, Integer paymentMethodId, Timestamp createdAt) {
         this.id = id;
         this.accountId = accountId;

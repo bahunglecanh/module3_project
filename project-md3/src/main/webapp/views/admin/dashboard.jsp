@@ -448,9 +448,9 @@
                 </div>
 
                 <div class="nav-item">
-                    <a href="/admin/cart" class="nav-link">
+                    <a href="/admin/order" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
-                        <span class="nav-text">Giỏ hàng</span>
+                        <span class="nav-text">View Orders</span>
                     </a>
                 </div>
 
@@ -546,11 +546,11 @@
                                 </div>
                                 <div class="quick-action-text">Quản lý Categories</div>
                             </a>
-                            <a href="$/admin/cart" class="quick-action">
+                            <a href="/admin/order" class="quick-action">
                                 <div class="quick-action-icon">
                                     <i class="fas fa-shopping-cart"></i>
                                 </div>
-                                <div class="quick-action-text">Quản lý Giỏ hàng</div>
+                                <div class="quick-action-text">View Orders</div>
                             </a>
                             <a href="/?view=home" class="quick-action">
                                 <div class="quick-action-icon">

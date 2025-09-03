@@ -1,10 +1,13 @@
 package hunglcb.example.projectmd3.service.order;
 
+import hunglcb.example.projectmd3.dto.CustomerOrderDTO;
+import hunglcb.example.projectmd3.dto.OrderItemDTO;
 import hunglcb.example.projectmd3.model.Order;
 import hunglcb.example.projectmd3.repository.order.IOrderRepository;
 import hunglcb.example.projectmd3.repository.order.OrderRepository;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +23,7 @@ public class OrderService implements IOrderService {
         if (orderId == null) return null;
         orderRepository.insertItemsFromCart(accountId, orderId);
         orderRepository.clearCart(accountId);
-        // COD orders should be pending for admin approval
-        orderRepository.updateStatus(orderId, "pending");
+        orderRepository.updateStatus(orderId, "confirmed");
         return orderId;
     }
 
@@ -36,15 +38,8 @@ public class OrderService implements IOrderService {
 
     @Override
     public boolean finalizePaidOrder(Integer orderId) {
-        // VNPay payment successful, but order should remain pending for admin approval
-        // Clear the cart since payment was successful
-        Order order = orderRepository.getOrderById(orderId);
-        if (order != null) {
-            orderRepository.clearCart(order.getAccountId());
-        }
-        return true; // Payment processed, order stays pending
+        return orderRepository.updateStatus(orderId, "confirmed");
     }
-
     @Override
     public List<Order> getUserOrders(Integer accountId) {
         if (accountId == null) {
@@ -64,18 +59,35 @@ public class OrderService implements IOrderService {
         if (orderId == null || accountId == null) {
             return false;
         }
-        
+
         // Check if order belongs to user and can be cancelled
         Order order = orderRepository.getOrderById(orderId);
         if (order == null || !order.getAccountId().equals(accountId)) {
             return false;
         }
-        
+
         if (!order.canCancel()) {
             return false;
         }
-        
+
         return orderRepository.updateStatus(orderId, "cancelled");
+    }
+    @Override
+    public List<CustomerOrderDTO> getAllOrders() throws SQLException {
+        return orderRepository.findAllOrders();
+    }
+
+    @Override
+    public CustomerOrderDTO getOrderById(Long orderId) throws SQLException {
+        return orderRepository.findOrderById(orderId);
+    }
+    @Override
+    public boolean updateOrderStatus(Long orderId, String status) throws SQLException {
+        // Validate trạng thái hợp lệ
+        if (!status.matches("pending|confirmed|shipped|delivered|cancelled")) {
+            throw new IllegalArgumentException("Trạng thái đơn hàng không hợp lệ!");
+        }
+        return orderRepository.updateOrderStatus(orderId, status);
     }
 
     @Override
@@ -111,5 +123,4 @@ public class OrderService implements IOrderService {
         return orderRepository.updateStatus(orderId, "delivered");
     }
 }
-
 

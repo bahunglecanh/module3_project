@@ -9,7 +9,7 @@ public class OrderItem {
     private Integer quantity;
     private BigDecimal price;
     private Integer sizeId;
-    
+
     // Additional fields for display
     private Product product;
     private ProductSize productSize;
@@ -17,7 +17,7 @@ public class OrderItem {
     // Constructors
     public OrderItem() {}
 
-    public OrderItem(Integer id, Integer orderId, Integer productId, Integer quantity, 
+    public OrderItem(Integer id, Integer orderId, Integer productId, Integer quantity,
                      BigDecimal price, Integer sizeId) {
         this.id = id;
         this.orderId = orderId;

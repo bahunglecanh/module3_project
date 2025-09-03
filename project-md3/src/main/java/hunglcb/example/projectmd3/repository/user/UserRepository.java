@@ -14,7 +14,7 @@ public class UserRepository implements IUserRepository {
     @Override
     public List<UserDTO> findAllUser() {
         List<UserDTO> users = new ArrayList<>();
-                        String sql = "SELECT a.id, a.email, a.role, a.status, a.created_at, " +
+        String sql = "SELECT a.id, a.email, a.role, a.status, a.created_at, " +
                 "p.full_name, p.phone, p.gender " +
                 "FROM accounts a " +
                 "LEFT JOIN user_profiles p ON a.id = p.account_id " +
@@ -65,27 +65,27 @@ public class UserRepository implements IUserRepository {
             preparedStatement.setString(1, fullName);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            String email = resultSet.getString("email");
-            Account.Role role = Account.Role.valueOf(resultSet.getString("role").toUpperCase());
-            Account.Status status = Account.Status.valueOf(resultSet.getString("status").toUpperCase());
-            Timestamp createdAt = resultSet.getTimestamp("created_at");
-            String actualFullName = resultSet.getString("full_name");
-            String phone = resultSet.getString("phone");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String email = resultSet.getString("email");
+                Account.Role role = Account.Role.valueOf(resultSet.getString("role").toUpperCase());
+                Account.Status status = Account.Status.valueOf(resultSet.getString("status").toUpperCase());
+                Timestamp createdAt = resultSet.getTimestamp("created_at");
+                String actualFullName = resultSet.getString("full_name");
+                String phone = resultSet.getString("phone");
 
-            UserProfile.Gender gender = null;
-            String genderStr = resultSet.getString("gender");
-            if (genderStr != null) {
-                gender = UserProfile.Gender.valueOf(genderStr.toUpperCase());
+                UserProfile.Gender gender = null;
+                String genderStr = resultSet.getString("gender");
+                if (genderStr != null) {
+                    gender = UserProfile.Gender.valueOf(genderStr.toUpperCase());
+                }
+
+                users.add(new UserDTO(id, email, role, status, createdAt, actualFullName, phone, gender));
             }
-
-            users.add(new UserDTO(id, email, role, status, createdAt, actualFullName, phone, gender));
+        } catch (SQLException e) {
+            System.out.println("Lỗi query findAllUser");
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        System.out.println("Lỗi query findAllUser");
-        e.printStackTrace();
-    }
 
         return users;
     }
@@ -94,13 +94,13 @@ public class UserRepository implements IUserRepository {
     @Override
     public Account authenticateByEmail(String email, String password) {
         String sql = "SELECT * FROM accounts WHERE email = ? AND password_hash = ? AND status = 'active'";
-        
+
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
             stmt.setString(1, email);
             stmt.setString(2, password);
-            
+
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Account account = new Account();
@@ -136,8 +136,8 @@ public class UserRepository implements IUserRepository {
     @Override
     public User findUserByEmail(String email) {
         String sql = "SELECT a.*, up.id AS profile_id, up.full_name, up.phone, up.gender, up.birth_date, up.avatar_url FROM accounts a " +
-                    "LEFT JOIN user_profiles up ON a.id = up.account_id " +
-                    "WHERE a.email = ? AND a.status = 'active'";
+                "LEFT JOIN user_profiles up ON a.id = up.account_id " +
+                "WHERE a.email = ? AND a.status = 'active'";
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
@@ -199,8 +199,8 @@ public class UserRepository implements IUserRepository {
     @Override
     public User findUserById(int id) {
         String sql = "SELECT a.*, up.id AS profile_id, up.full_name, up.phone, up.gender, up.birth_date, up.avatar_url FROM accounts a " +
-                    "LEFT JOIN user_profiles up ON a.id = up.account_id " +
-                    "WHERE a.id = ? AND a.status = 'active'";
+                "LEFT JOIN user_profiles up ON a.id = up.account_id " +
+                "WHERE a.id = ? AND a.status = 'active'";
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -265,7 +265,7 @@ public class UserRepository implements IUserRepository {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, email);
-            
+
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1) > 0;
@@ -282,7 +282,7 @@ public class UserRepository implements IUserRepository {
         try {
             conn = ConnectionDB.getConnectDB();
             conn.setAutoCommit(false);
-            
+
             // Insert account first - use correct column names
             String accountSql = "INSERT INTO accounts (email, password_hash, role, status) VALUES (?, ?, 'user', 'active')";
             PreparedStatement accountStmt = conn.prepareStatement(accountSql, Statement.RETURN_GENERATED_KEYS);
@@ -294,7 +294,7 @@ public class UserRepository implements IUserRepository {
                 conn.rollback();
                 return false;
             }
-            
+
             // Get generated account ID
             ResultSet generatedKeys = accountStmt.getGeneratedKeys();
             int accountId;
@@ -304,7 +304,7 @@ public class UserRepository implements IUserRepository {
                 conn.rollback();
                 return false;
             }
-            
+
             // Insert user profile (correct table name: user_profiles)
             String userSql = "INSERT INTO user_profiles (account_id, full_name, phone, avatar_url) VALUES (?, ?, ?, ?)";
             PreparedStatement userStmt = conn.prepareStatement(userSql);
@@ -321,7 +321,7 @@ public class UserRepository implements IUserRepository {
                 conn.rollback();
                 return false;
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             if (conn != null) {
@@ -414,13 +414,13 @@ public class UserRepository implements IUserRepository {
         try {
             conn = ConnectionDB.getConnectDB();
             conn.setAutoCommit(false);
-            
+
             // Delete user profile first (CASCADE will handle this, but explicit is better)
             String deleteProfileSql = "DELETE FROM user_profiles WHERE account_id = ?";
             PreparedStatement deleteProfileStmt = conn.prepareStatement(deleteProfileSql);
             deleteProfileStmt.setInt(1, userId);  // userId is actually account_id
             deleteProfileStmt.executeUpdate();
-            
+
             // Delete account (this will cascade delete user_profiles due to FK)
             String deleteAccountSql = "DELETE FROM accounts WHERE id = ?";
             PreparedStatement deleteAccountStmt = conn.prepareStatement(deleteAccountSql);
@@ -434,7 +434,7 @@ public class UserRepository implements IUserRepository {
                 conn.rollback();
                 return false;
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             if (conn != null) {
@@ -460,15 +460,15 @@ public class UserRepository implements IUserRepository {
     @Override
     public boolean banUser(int userId) {
         String sql = "UPDATE accounts SET status = 'banned', updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-        
+
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
             stmt.setInt(1, userId);
             int rowsAffected = stmt.executeUpdate();
-            
+
             return rowsAffected > 0;
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -478,15 +478,15 @@ public class UserRepository implements IUserRepository {
     @Override
     public boolean unbanUser(int userId) {
         String sql = "UPDATE accounts SET status = 'active', updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-        
+
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
             stmt.setInt(1, userId);
             int rowsAffected = stmt.executeUpdate();
-            
+
             return rowsAffected > 0;
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

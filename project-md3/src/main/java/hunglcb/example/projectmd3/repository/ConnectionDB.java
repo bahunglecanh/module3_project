@@ -20,9 +20,4 @@ public class ConnectionDB {
         }
         return connection;
     }
-    
-    // Alias method for compatibility
-    public static Connection getConnection(){
-        return getConnectDB();
-    }
 }

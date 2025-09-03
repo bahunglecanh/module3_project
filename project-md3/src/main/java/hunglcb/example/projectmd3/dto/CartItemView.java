@@ -12,6 +12,7 @@ public class CartItemView {
     private Integer quantity;
     private BigDecimal lineTotal;
 
+
     public Integer getCartItemId() { return cartItemId; }
     public void setCartItemId(Integer cartItemId) { this.cartItemId = cartItemId; }
     public Integer getProductId() { return productId; }

@@ -1,5 +1,7 @@
 package hunglcb.example.projectmd3.repository.order;
 
+import hunglcb.example.projectmd3.dto.CustomerOrderDTO;
+import hunglcb.example.projectmd3.dto.OrderItemDTO;
 import hunglcb.example.projectmd3.model.Order;
 import hunglcb.example.projectmd3.model.OrderItem;
 import hunglcb.example.projectmd3.model.Product;
@@ -78,16 +80,16 @@ public class OrderRepository implements IOrderRepository {
     public List<Order> getOrdersByAccountId(Integer accountId) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT o.*, pm.name as payment_method_name " +
-                    "FROM orders o " +
-                    "LEFT JOIN payment_methods pm ON o.payment_method_id = pm.id " +
-                    "WHERE o.account_id = ? " +
-                    "ORDER BY o.created_at DESC";
-        
+                "FROM orders o " +
+                "LEFT JOIN payment_methods pm ON o.payment_method_id = pm.id " +
+                "WHERE o.account_id = ? " +
+                "ORDER BY o.created_at DESC";
+
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, accountId);
             ResultSet rs = ps.executeQuery();
-            
+
             while (rs.next()) {
                 Order order = new Order();
                 order.setId(rs.getInt("id"));
@@ -98,7 +100,7 @@ public class OrderRepository implements IOrderRepository {
                 order.setPaymentMethodId(rs.getInt("payment_method_id"));
                 order.setCreatedAt(rs.getTimestamp("created_at"));
                 order.setPaymentMethodName(rs.getString("payment_method_name"));
-                
+
                 orders.add(order);
             }
         } catch (SQLException e) {
@@ -110,15 +112,15 @@ public class OrderRepository implements IOrderRepository {
     @Override
     public Order getOrderById(Integer orderId) {
         String sql = "SELECT o.*, pm.name as payment_method_name " +
-                    "FROM orders o " +
-                    "LEFT JOIN payment_methods pm ON o.payment_method_id = pm.id " +
-                    "WHERE o.id = ?";
-        
+                "FROM orders o " +
+                "LEFT JOIN payment_methods pm ON o.payment_method_id = pm.id " +
+                "WHERE o.id = ?";
+
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
-            
+
             if (rs.next()) {
                 Order order = new Order();
                 order.setId(rs.getInt("id"));
@@ -129,7 +131,7 @@ public class OrderRepository implements IOrderRepository {
                 order.setPaymentMethodId(rs.getInt("payment_method_id"));
                 order.setCreatedAt(rs.getTimestamp("created_at"));
                 order.setPaymentMethodName(rs.getString("payment_method_name"));
-                
+
                 return order;
             }
         } catch (SQLException e) {
@@ -142,19 +144,19 @@ public class OrderRepository implements IOrderRepository {
     public List<OrderItem> getOrderItemsByOrderId(Integer orderId) {
         List<OrderItem> items = new ArrayList<>();
         String sql = "SELECT oi.*, p.name as product_name, p.image_url, p.description, " +
-                    "ps.size, c.name as category_name, b.name as brand_name " +
-                    "FROM order_items oi " +
-                    "JOIN products p ON oi.product_id = p.id " +
-                    "LEFT JOIN product_sizes ps ON oi.size_id = ps.id " +
-                    "LEFT JOIN categories c ON p.category_id = c.id " +
-                    "LEFT JOIN brands b ON p.brand_id = b.id " +
-                    "WHERE oi.order_id = ?";
-        
+                "ps.size, c.name as category_name, b.name as brand_name " +
+                "FROM order_items oi " +
+                "JOIN products p ON oi.product_id = p.id " +
+                "LEFT JOIN product_sizes ps ON oi.size_id = ps.id " +
+                "LEFT JOIN categories c ON p.category_id = c.id " +
+                "LEFT JOIN brands b ON p.brand_id = b.id " +
+                "WHERE oi.order_id = ?";
+
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
-            
+
             while (rs.next()) {
                 OrderItem item = new OrderItem();
                 item.setId(rs.getInt("id"));
@@ -163,7 +165,7 @@ public class OrderRepository implements IOrderRepository {
                 item.setQuantity(rs.getInt("quantity"));
                 item.setPrice(rs.getBigDecimal("price"));
                 item.setSizeId(rs.getInt("size_id"));
-                
+
                 // Create Product object
                 Product product = new Product();
                 product.setId(rs.getInt("product_id"));
@@ -172,9 +174,9 @@ public class OrderRepository implements IOrderRepository {
                 product.setDescription(rs.getString("description"));
                 product.setCategoryName(rs.getString("category_name"));
                 product.setBrandName(rs.getString("brand_name"));
-                
+
                 item.setProduct(product);
-                
+
                 // Create ProductSize object if exists
                 if (rs.getInt("size_id") != 0) {
                     ProductSize size = new ProductSize();
@@ -182,7 +184,7 @@ public class OrderRepository implements IOrderRepository {
                     size.setSize(rs.getString("size"));
                     item.setProductSize(size);
                 }
-                
+
                 items.add(item);
             }
         } catch (SQLException e) {
@@ -197,7 +199,7 @@ public class OrderRepository implements IOrderRepository {
         if (order != null) {
             List<OrderItem> items = getOrderItemsByOrderId(orderId);
             order.setOrderItems(items);
-            
+
             // Get shipping address if exists
             if (order.getShippingAddressId() != null) {
                 UserAddress shippingAddress = getShippingAddressById(order.getShippingAddressId());
@@ -206,14 +208,14 @@ public class OrderRepository implements IOrderRepository {
         }
         return order;
     }
-    
+
     private UserAddress getShippingAddressById(Integer addressId) {
         String sql = "SELECT * FROM user_addresses WHERE id = ?";
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, addressId);
             ResultSet rs = ps.executeQuery();
-            
+
             if (rs.next()) {
                 UserAddress address = new UserAddress();
                 address.setId(rs.getInt("id"));
@@ -232,6 +234,121 @@ public class OrderRepository implements IOrderRepository {
         }
         return null;
     }
+
+    @Override
+    public List<CustomerOrderDTO> findAllOrders() throws SQLException {
+        String sql = "SELECT o.id AS order_id, o.status AS order_status, o.total_amount, o.created_at AS order_date, " +
+                "a.id AS account_id, a.email, up.full_name, up.phone, " +
+                "ua.address_line, ua.city, ua.state, ua.postal_code, ua.country " +
+                "FROM orders o " +
+                "JOIN accounts a ON o.account_id = a.id " +
+                "LEFT JOIN user_profiles up ON a.id = up.account_id " +
+                "LEFT JOIN user_addresses ua ON o.shipping_address_id = ua.id " +
+                "ORDER BY o.created_at DESC";
+
+        List<CustomerOrderDTO> orders = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnectDB();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                CustomerOrderDTO order = new CustomerOrderDTO();
+                order.setOrderId(rs.getLong("order_id"));
+                order.setOrderStatus(rs.getString("order_status"));
+                order.setTotalAmount(rs.getBigDecimal("total_amount"));
+                order.setOrderDate(rs.getTimestamp("order_date").toLocalDateTime());
+                order.setAccountId(rs.getLong("account_id"));
+                order.setEmail(rs.getString("email"));
+                order.setFullName(rs.getString("full_name"));
+                order.setPhone(rs.getString("phone"));
+                order.setAddressLine(rs.getString("address_line"));
+                order.setCity(rs.getString("city"));
+                order.setState(rs.getString("state"));
+                order.setPostalCode(rs.getString("postal_code"));
+                order.setCountry(rs.getString("country"));
+
+                // Lấy danh sách sản phẩm
+                order.setItems(findOrderItemsByOrderId(order.getOrderId()));
+
+                orders.add(order);
+            }
+        }
+        return orders;
+    }
+
+    @Override
+    public List<OrderItemDTO> findOrderItemsByOrderId(Long orderId) throws SQLException {
+        String sql = "SELECT oi.product_id, p.name AS product_name, oi.quantity, oi.price, ps.size, p.image_url " +
+                "FROM order_items oi " +
+                "JOIN products p ON oi.product_id = p.id " +
+                "LEFT JOIN product_sizes ps ON oi.size_id = ps.id " +
+                "WHERE oi.order_id = ?";
+        List<OrderItemDTO> items = new ArrayList<>();
+        try (Connection conn = ConnectionDB.getConnectDB();
+
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, orderId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                OrderItemDTO item = new OrderItemDTO();
+                item.setProductId(rs.getLong("product_id"));
+                item.setProductName(rs.getString("product_name"));
+                item.setQuantity(rs.getInt("quantity"));
+                item.setPrice(rs.getBigDecimal("price"));
+                item.setSize(rs.getString("size"));
+                item.setImageUrl(rs.getString("image_url"));
+                items.add(item);
+            }
+        }
+        return items;
+    }
+
+    @Override
+    public boolean updateOrderStatus(Long orderId, String status) throws SQLException {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        try (Connection conn = ConnectionDB.getConnectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            pstmt.setLong(2, orderId);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    @Override
+    public CustomerOrderDTO findOrderById(Long orderId) throws SQLException {
+        String sql = "SELECT o.id AS order_id, o.status AS order_status, o.total_amount, o.created_at AS order_date, " +
+                "a.id AS account_id, a.email, up.full_name, up.phone, " +
+                "ua.address_line, ua.city, ua.state, ua.postal_code, ua.country " +
+                "FROM orders o " +
+                "JOIN accounts a ON o.account_id = a.id " +
+                "LEFT JOIN user_profiles up ON a.id = up.account_id " +
+                "LEFT JOIN user_addresses ua ON o.shipping_address_id = ua.id " +
+                "WHERE o.id = ?";
+
+        CustomerOrderDTO order = null;
+        try (Connection conn = ConnectionDB.getConnectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, orderId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                order = new CustomerOrderDTO();
+                order.setOrderId(rs.getLong("order_id"));
+                order.setOrderStatus(rs.getString("order_status"));
+                order.setTotalAmount(rs.getBigDecimal("total_amount"));
+                order.setOrderDate(rs.getTimestamp("order_date").toLocalDateTime());
+                order.setAccountId(rs.getLong("account_id"));
+                order.setEmail(rs.getString("email"));
+                order.setFullName(rs.getString("full_name"));
+                order.setPhone(rs.getString("phone"));
+                order.setAddressLine(rs.getString("address_line"));
+                order.setCity(rs.getString("city"));
+                order.setState(rs.getString("state"));
+                order.setPostalCode(rs.getString("postal_code"));
+                order.setCountry(rs.getString("country"));
+
+                order.setItems(findOrderItemsByOrderId(order.getOrderId()));
+            }
+        }
+        return order;
+    }
 }
-
-
