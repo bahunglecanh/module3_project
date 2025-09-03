@@ -10,55 +10,42 @@ import java.io.IOException;
 
 public class AuthenticationFilter implements Filter {
 
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        
+
         String requestURI = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
         String path = requestURI.substring(contextPath.length());
-        
-        User currentUser = getCurrentUser(httpRequest);
-        
+
+        // false là chưa có sesstion thi tra ve null tu tao session moi
+        HttpSession session = httpRequest.getSession(false);
+        // gia tri ban dau chua tro toi doi tuong nao
+        User currentUser = null;
+        if (session != null) {
+            currentUser = (User) session.getAttribute("user");
+        }
+
+
         if (currentUser == null) {
-            redirectToLogin(httpRequest, httpResponse, requestURI);
+            String loginURL = contextPath + "/auth/login?redirect=" + java.net.URLEncoder.encode(requestURI, "UTF-8");
+            httpResponse.sendRedirect(loginURL);
             return;
         }
-        
-        if (isAdminPath(path) && !currentUser.isAdmin()) {
-            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
-            return;
+
+        // Check admin access
+        if (path.startsWith("/admin/")) {
+            if (!currentUser.isAdmin()) {
+                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+                return;
+            }
         }
-        
+        // Tiep tuc requeest response
         chain.doFilter(request, response);
     }
 
-    private User getCurrentUser(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) return null;
-        
-        Object user = session.getAttribute("user");
-        return (user instanceof User) ? (User) user : null;
-    }
-
-    private boolean isAdminPath(String path) {
-        return path.startsWith("/admin/");
-    }
-
-    private void redirectToLogin(HttpServletRequest request, HttpServletResponse response, 
-                               String requestURI) throws IOException {
-        String contextPath = request.getContextPath();
-        String loginURL = contextPath + "/auth/login?redirect=" + 
-                         java.net.URLEncoder.encode(requestURI, "UTF-8");
-        response.sendRedirect(loginURL);
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
-    
-    @Override
-    public void destroy() {}
 }
