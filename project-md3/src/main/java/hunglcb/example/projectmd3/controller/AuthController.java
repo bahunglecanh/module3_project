@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @WebServlet(name = "AuthController", urlPatterns = {"/auth/*"})
 public class AuthController extends HttpServlet {
-    
+
     private IUserService userService;
 
     @Override
@@ -23,11 +23,11 @@ public class AuthController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String path = request.getPathInfo();
-        
+
         if (path == null) {
             response.sendRedirect(request.getContextPath() + "/");
             return;
@@ -50,14 +50,14 @@ public class AuthController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        
+
         String path = request.getPathInfo();
-        
+
         if (path == null) {
             response.sendRedirect(request.getContextPath() + "/");
             return;
@@ -76,16 +76,16 @@ public class AuthController extends HttpServlet {
         }
     }
 
-    private void showLoginPage(HttpServletRequest request, HttpServletResponse response) 
+    private void showLoginPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Check if user is already logged in
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             response.sendRedirect(request.getContextPath() + "/");
             return;
         }
-        
+
         // preserve redirect param
         String redirect = request.getParameter("redirect");
         if (redirect != null && !redirect.isEmpty()) {
@@ -94,22 +94,22 @@ public class AuthController extends HttpServlet {
         request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
 
-    private void showRegisterPage(HttpServletRequest request, HttpServletResponse response) 
+    private void showRegisterPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Check if user is already logged in
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             response.sendRedirect(request.getContextPath() + "/");
             return;
         }
-        
+
         request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
     }
 
-    private void handleLogin(HttpServletRequest request, HttpServletResponse response) 
+    private void handleLogin(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String errorMessage = null;
@@ -123,7 +123,7 @@ public class AuthController extends HttpServlet {
             try {
                 // Try login via service
                 User user = userService.login(email, password);
-                
+
                 if (user != null) {
                     // Success
                     HttpSession session = request.getSession(true);
@@ -149,9 +149,9 @@ public class AuthController extends HttpServlet {
         request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
 
-    private void handleRegister(HttpServletRequest request, HttpServletResponse response) 
+    private void handleRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
@@ -198,14 +198,14 @@ public class AuthController extends HttpServlet {
         request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
     }
 
-    private void handleLogout(HttpServletRequest request, HttpServletResponse response) 
+    private void handleLogout(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
-        
+
         response.sendRedirect(request.getContextPath() + "/");
     }
 }

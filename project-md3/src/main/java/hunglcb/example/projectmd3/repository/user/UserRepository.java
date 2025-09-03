@@ -5,6 +5,7 @@ import hunglcb.example.projectmd3.model.Account;
 import hunglcb.example.projectmd3.model.User;
 import hunglcb.example.projectmd3.model.UserProfile;
 import hunglcb.example.projectmd3.repository.ConnectionDB;
+import hunglcb.example.projectmd3.repository.user.IUserRepository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -49,7 +50,6 @@ public class UserRepository implements IUserRepository {
         return users;
     }
 
-
     @Override
     public Account authenticateByEmail(String email, String password) {
         String sql = "SELECT * FROM accounts WHERE email = ? AND password_hash = ? AND status = 'active'";
@@ -66,7 +66,7 @@ public class UserRepository implements IUserRepository {
                 account.setId(rs.getInt("id"));
                 account.setEmail(rs.getString("email"));
                 account.setPasswordHash(rs.getString("password_hash"));
-
+                
                 // Simple role conversion
                 String roleStr = rs.getString("role");
                 if ("admin".equalsIgnoreCase(roleStr)) {
@@ -74,7 +74,7 @@ public class UserRepository implements IUserRepository {
                 } else {
                     account.setRole(Account.Role.USER);
                 }
-
+                
                 // Status conversion from ENUM
                 String statusStr = rs.getString("status");
                 if ("active".equalsIgnoreCase(statusStr)) {
@@ -91,7 +91,7 @@ public class UserRepository implements IUserRepository {
         }
         return null;
     }
-
+    
     @Override
     public User findUserByEmail(String email) {
         String sql = "SELECT a.*, up.id AS profile_id, up.full_name, up.phone, up.gender, up.birth_date, up.avatar_url FROM accounts a " +
@@ -105,7 +105,7 @@ public class UserRepository implements IUserRepository {
                 User user = new User();
                 user.setId(rs.getInt("id"));
                 user.setEmail(email);
-
+                
                 // Profile fields
                 int profileId = rs.getInt("profile_id");
                 if (!rs.wasNull()) {
@@ -129,7 +129,7 @@ public class UserRepository implements IUserRepository {
                 }
                 user.setBirthDate(rs.getDate("birth_date"));
                 user.setAvatarUrl(rs.getString("avatar_url"));
-
+                
                 // Role conversion
                 String roleStr = rs.getString("role");
                 if ("admin".equalsIgnoreCase(roleStr)) {
@@ -137,7 +137,7 @@ public class UserRepository implements IUserRepository {
                 } else {
                     user.setRole(Account.Role.USER);
                 }
-
+                
                 // Status conversion
                 String statusStr = rs.getString("status");
                 if ("active".equalsIgnoreCase(statusStr)) {
@@ -154,7 +154,7 @@ public class UserRepository implements IUserRepository {
         }
         return null;
     }
-
+    
     @Override
     public User findUserById(int id) {
         String sql = "SELECT a.*, up.id AS profile_id, up.full_name, up.phone, up.gender, up.birth_date, up.avatar_url FROM accounts a " +
@@ -168,7 +168,7 @@ public class UserRepository implements IUserRepository {
                 User user = new User();
                 user.setId(rs.getInt("id"));
                 user.setEmail(rs.getString("email"));
-
+                
                 int profileId = rs.getInt("profile_id");
                 if (!rs.wasNull()) {
                     user.setProfileId(profileId);
@@ -191,7 +191,7 @@ public class UserRepository implements IUserRepository {
                 }
                 user.setBirthDate(rs.getDate("birth_date"));
                 user.setAvatarUrl(rs.getString("avatar_url"));
-
+                
                 // Role conversion
                 String roleStr = rs.getString("role");
                 if ("admin".equalsIgnoreCase(roleStr)) {
@@ -199,7 +199,7 @@ public class UserRepository implements IUserRepository {
                 } else {
                     user.setRole(Account.Role.USER);
                 }
-
+                
                 // Status conversion
                 String statusStr = rs.getString("status");
                 if ("active".equalsIgnoreCase(statusStr)) {
@@ -216,13 +216,13 @@ public class UserRepository implements IUserRepository {
         }
         return null;
     }
-
+    
     @Override
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM accounts WHERE email = ?";
         try (Connection conn = ConnectionDB.getConnectDB();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            
             stmt.setString(1, email);
             
             ResultSet rs = stmt.executeQuery();
@@ -234,7 +234,7 @@ public class UserRepository implements IUserRepository {
         }
         return false;
     }
-
+    
     @Override
     public boolean saveUser(User user) {
         Connection conn = null;
@@ -247,7 +247,7 @@ public class UserRepository implements IUserRepository {
             PreparedStatement accountStmt = conn.prepareStatement(accountSql, Statement.RETURN_GENERATED_KEYS);
             accountStmt.setString(1, user.getEmail());
             accountStmt.setString(2, user.getPasswordHash());
-
+            
             int rowsAffected = accountStmt.executeUpdate();
             if (rowsAffected == 0) {
                 conn.rollback();
@@ -271,7 +271,7 @@ public class UserRepository implements IUserRepository {
             userStmt.setString(2, user.getFullName());
             userStmt.setString(3, user.getPhone());
             userStmt.setString(4, user.getAvatarUrl());
-
+            
             int userRows = userStmt.executeUpdate();
             if (userRows > 0) {
                 conn.commit();
@@ -302,7 +302,7 @@ public class UserRepository implements IUserRepository {
         }
         return false;
     }
-
+    
     @Override
     public boolean updateUser(User user) {
         String updateSql = "UPDATE user_profiles SET full_name = ?, phone = ?, gender = ?, birth_date = ?, avatar_url = COALESCE(?, avatar_url) WHERE account_id = ?";
@@ -366,7 +366,7 @@ public class UserRepository implements IUserRepository {
         }
         return false;
     }
-
+    
     @Override
     public boolean deleteAccount(int userId) {
         Connection conn = null;
@@ -385,7 +385,7 @@ public class UserRepository implements IUserRepository {
             PreparedStatement deleteAccountStmt = conn.prepareStatement(deleteAccountSql);
             deleteAccountStmt.setInt(1, userId);
             int accountRows = deleteAccountStmt.executeUpdate();
-
+            
             if (accountRows > 0) {
                 conn.commit();
                 return true;
