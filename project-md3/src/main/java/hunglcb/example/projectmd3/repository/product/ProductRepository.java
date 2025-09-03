@@ -1,5 +1,6 @@
 package hunglcb.example.projectmd3.repository.product;
 
+import hunglcb.example.projectmd3.dto.ProductDTO;
 import hunglcb.example.projectmd3.model.Product;
 import hunglcb.example.projectmd3.model.ProductSize;
 import hunglcb.example.projectmd3.repository.ConnectionDB;
@@ -12,7 +13,7 @@ public class ProductRepository implements IProductRepository {
 
     @Override
     public boolean save(Product product) {
-        String sql = "INSERT INTO products (category_id, name, description, price, stock_quantity, image_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (category_id, name, description, price, stock_quantity, image_url, brand_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection connection = ConnectionDB.getConnectDB();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -23,8 +24,9 @@ public class ProductRepository implements IProductRepository {
             statement.setBigDecimal(4, product.getPrice());
             statement.setInt(5, product.getStockQuantity());
             statement.setString(6, product.getImageUrl());
-            statement.setTimestamp(7, product.getCreatedAt());
-            statement.setTimestamp(8, product.getUpdatedAt());
+            statement.setObject(7, product.getBrandId());
+            statement.setTimestamp(8, product.getCreatedAt());
+            statement.setTimestamp(9, product.getUpdatedAt());
             
             int result = statement.executeUpdate();
             if (result > 0) {
@@ -67,7 +69,7 @@ public class ProductRepository implements IProductRepository {
 
     @Override
     public boolean update(Product product) {
-        String sql = "UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, stock_quantity = ?, image_url = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, stock_quantity = ?, image_url = ?, brand_id = ?, updated_at = ? WHERE id = ?";
         
         try (Connection connection = ConnectionDB.getConnectDB();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -80,8 +82,9 @@ public class ProductRepository implements IProductRepository {
             statement.setBigDecimal(4, product.getPrice());
             statement.setInt(5, product.getStockQuantity());
             statement.setString(6, product.getImageUrl());
-            statement.setTimestamp(7, product.getUpdatedAt());
-            statement.setInt(8, product.getId());
+            statement.setObject(7, product.getBrandId());
+            statement.setTimestamp(8, product.getUpdatedAt());
+            statement.setInt(9, product.getId());
             
             return statement.executeUpdate() > 0;
             
@@ -89,6 +92,59 @@ public class ProductRepository implements IProductRepository {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        String sql = "DELETE FROM products WHERE id = ?";
+        
+        try (Connection connection = ConnectionDB.getConnectDB();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, id);
+            return statement.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public List<ProductDTO> findAllProducts() {
+        String sql = "SELECT p.id, p.name, p.description, p.price, p.stock_quantity, p.image_url, p.brand_id, " +
+                    "p.category_id, c.name as category_name, b.name as brand_name " +
+                    "FROM products p " +
+                    "LEFT JOIN categories c ON p.category_id = c.id " +
+                    "LEFT JOIN brands b ON p.brand_id = b.id " +
+                    "ORDER BY p.created_at DESC";
+        List<ProductDTO> products = new ArrayList<>();
+        
+        try (Connection connection = ConnectionDB.getConnectDB();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            ResultSet resultSet = statement.executeQuery();
+            
+            while (resultSet.next()) {
+                ProductDTO productDTO = new ProductDTO(
+                    resultSet.getInt("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getBigDecimal("price"),
+                    resultSet.getInt("stock_quantity"),
+                    resultSet.getString("image_url"),
+                    resultSet.getObject("brand_id", Integer.class),
+                    resultSet.getObject("category_id", Integer.class),
+                    resultSet.getString("category_name"),
+                    resultSet.getString("brand_name")
+                );
+                products.add(productDTO);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
     }
 
     @Override

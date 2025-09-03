@@ -56,16 +56,17 @@ public class HomeController extends HttpServlet {
             }
         }
         
-        // Set user info for the view
         request.setAttribute("currentUser", currentUser);
         request.setAttribute("isLoggedIn", currentUser != null);
         
-        // Check if user is admin
         boolean isAdmin = currentUser != null && currentUser.isAdmin();
         request.setAttribute("isAdmin", isAdmin);
         
-        // Redirect admin users to admin dashboard
-        if (currentUser != null && isAdmin) {
+        String viewParam = request.getParameter("view");
+        boolean viewHome = "home".equals(viewParam);
+
+        //Nếu là admin và không có ?view=home return đến dashboard con` k thi` o lai trang chu
+        if (currentUser != null && isAdmin && !viewHome) {
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
         }

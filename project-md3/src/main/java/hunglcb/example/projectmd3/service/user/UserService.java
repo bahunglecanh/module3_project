@@ -88,7 +88,11 @@ public class UserService implements IUserService {
         public List<UserDTO> findAllUsers() {
             return userRepository.findAllUser();
         }
-    
+
+    @Override
+    public List<UserDTO> searchByName(String fullName) {
+        return userRepository.searchByName(fullName);
+    }
     @Override
     public boolean updatePasswordByEmail(String email, String newPasswordHash) {
         if (email == null || email.trim().isEmpty() || newPasswordHash == null || newPasswordHash.trim().isEmpty()) {
@@ -96,6 +100,29 @@ public class UserService implements IUserService {
         }
         return userRepository.updatePasswordByEmail(email.trim(), newPasswordHash.trim());
     }
+
+    @Override
+    public boolean banUser(int userId) {
+        if (userId <= 0) {
+            return false;
+        }
+        return userRepository.banUser(userId);
+    }
+
+    @Override
+    public boolean unbanUser(int userId) {
+        if (userId <= 0) {
+            return false;
+        }
+        return userRepository.unbanUser(userId);
+    }
+
+    @Override
+    public int getTotalUsersCount() {
+        List<UserDTO> users = findAllUsers();
+        return users != null ? users.size() : 0;
+    }
 }
+
 
 

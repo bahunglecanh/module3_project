@@ -15,6 +15,10 @@ public interface IUserService {
     User findById(int id);
     boolean updateUser(User user);
     List<UserDTO> findAllUsers();
+    List<UserDTO> searchByName(String fullName);
+    boolean banUser(int userId);
+    boolean unbanUser(int userId);
+    int getTotalUsersCount();
     boolean updatePasswordByEmail(String email, String newPasswordHash);
 
 }

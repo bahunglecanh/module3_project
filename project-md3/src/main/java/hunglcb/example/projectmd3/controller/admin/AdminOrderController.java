@@ -1,6 +1,7 @@
 package hunglcb.example.projectmd3.controller.admin;
 
 import hunglcb.example.projectmd3.dto.CustomerOrderDTO;
+import hunglcb.example.projectmd3.service.order.IOrderService;
 import hunglcb.example.projectmd3.service.order.OrderService;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +15,7 @@ import java.util.List;
 @WebServlet(name = "AdminOrderController", urlPatterns = {"/admin/order"})
 public class AdminOrderController extends HttpServlet {
 
-    private OrderService orderService = new OrderService();
+    private IOrderService orderService = new OrderService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

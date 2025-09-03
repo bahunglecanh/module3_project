@@ -230,6 +230,10 @@
             background: linear-gradient(135deg, #10b981 0%, #047857 100%);
         }
 
+        .stat-icon.categories {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
         .stat-icon.orders {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
@@ -402,7 +406,7 @@
         <aside class="sidebar">
             <!-- Logo Section -->
             <div class="logo-section">
-                <a href="${pageContext.request.contextPath}/admin/dashboard" class="logo">
+                <a href="/admin/dashboard" class="logo">
                     <div class="logo-icon">
                         <i class="fas fa-gem"></i>
                     </div>
@@ -416,7 +420,7 @@
             <!-- Navigation Menu -->
             <nav class="nav-menu">
                 <div class="nav-item">
-                    <a href="/views/home.jsp" class="nav-link active">
+                    <a href="/?view=home" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-home"></i></span>
                         <span class="nav-text">Home</span>
                     </a>
@@ -425,14 +429,21 @@
                 <div class="nav-item">
                     <a href="/admin/listuser" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-users"></i></span>
-                        <span class="nav-text">User</span>
+                        <span class="nav-text">Users</span>
                     </a>
                 </div>
 
                 <div class="nav-item">
-                    <a href="${pageContext.request.contextPath}/admin/products" class="nav-link">
+                    <a href="/admin/products" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-box"></i></span>
-                        <span class="nav-text">Product</span>
+                        <span class="nav-text">Products</span>
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="/admin/categories" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-tags"></i></span>
+                        <span class="nav-text">Categories</span>
                     </a>
                 </div>
 
@@ -445,7 +456,7 @@
 
                 <!-- Logout -->
                 <div class="nav-item" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-gray);">
-                    <a href="${pageContext.request.contextPath}/auth/logout" class="nav-link">
+                    <a href="/auth/logout" class="nav-link">
                         <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
                         <span class="nav-text">Logout</span>
                     </a>
@@ -457,103 +468,56 @@
         <main class="main-content">
             <!-- Header -->
             <header class="content-header">
-                <h1 class="page-title">Welcome back, Admin!</h1>
-                <p class="page-subtitle">Here's what's happening with your system today.</p>
+                <h1 class="page-title">Admin Dashboard</h1>
+                <p class="page-subtitle">Quản lý hệ thống</p>
             </header>
 
-            <!-- Statistics Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-header">
-                        <h6 class="stat-title">Total Users</h6>
+                        <h6 class="stat-title">Users</h6>
                         <div class="stat-icon users">
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
                     <div class="stat-number">${stats.totalUsers != null ? stats.totalUsers : 0}</div>
-                    <div class="stat-description">Active system users</div>
+                    <div class="stat-description">Tổng số người dùng</div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-header">
-                        <h6 class="stat-title">Total Products</h6>
+                        <h6 class="stat-title">Products</h6>
                         <div class="stat-icon products">
                             <i class="fas fa-box"></i>
                         </div>
                     </div>
                     <div class="stat-number">${stats.totalProducts != null ? stats.totalProducts : 0}</div>
-                    <div class="stat-description">Products in inventory</div>
+                    <div class="stat-description">Tổng số sản phẩm</div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-header">
-                        <h6 class="stat-title">Total Orders</h6>
-                        <div class="stat-icon orders">
-                            <i class="fas fa-shopping-cart"></i>
+                        <h6 class="stat-title">Categories</h6>
+                        <div class="stat-icon categories">
+                            <i class="fas fa-tags"></i>
                         </div>
                     </div>
-                    <div class="stat-number">${stats.totalOrders != null ? stats.totalOrders : 0}</div>
-                    <div class="stat-description">Customer orders</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <h6 class="stat-title">System Activity</h6>
-                        <div class="stat-icon activity">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                    </div>
-                    <div class="stat-number">98%</div>
-                    <div class="stat-description">System performance</div>
+                    <div class="stat-number">${stats.totalCategories != null ? stats.totalCategories : 0}</div>
+                    <div class="stat-description">Tổng số danh mục</div>
                 </div>
             </div>
 
-            <!-- Content Grid -->
             <div class="content-grid">
-                <!-- Recent Activity -->
                 <div class="content-card">
                     <div class="card-header">
-                        <h5 class="card-title">Recent Activity</h5>
+                        <h5 class="card-title">Thông tin hệ thống</h5>
                     </div>
                     <div class="card-body">
-                        <ul class="activity-list">
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <div class="activity-title">New user registered</div>
-                                    <div class="activity-time">2 hours ago</div>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-box"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <div class="activity-title">New product added</div>
-                                    <div class="activity-time">5 hours ago</div>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <div class="activity-title">Order completed</div>
-                                    <div class="activity-time">1 day ago</div>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-cog"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <div class="activity-title">System updated</div>
-                                    <div class="activity-time">2 days ago</div>
-                                </div>
-                            </li>
-                        </ul>
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-cog" style="font-size: 48px; color: var(--primary-purple); margin-bottom: 16px;"></i>
+                            <h6>Hệ thống hoạt động bình thường</h6>
+                            <p class="text-muted">Tất cả các chức năng đang hoạt động tốt</p>
+                        </div>
                     </div>
                 </div>
 
@@ -564,17 +528,23 @@
                     </div>
                     <div class="card-body">
                         <div class="quick-actions">
-                            <a href="${pageContext.request.contextPath}/admin/users" class="quick-action">
+                            <a href="/admin/listuser" class="quick-action">
                                 <div class="quick-action-icon">
                                     <i class="fas fa-users"></i>
                                 </div>
-                                <div class="quick-action-text">Manage Users</div>
+                                <div class="quick-action-text">Quản lý Users</div>
                             </a>
-                            <a href="${pageContext.request.contextPath}/admin/products" class="quick-action">
+                            <a href="/admin/products" class="quick-action">
                                 <div class="quick-action-icon">
                                     <i class="fas fa-box"></i>
                                 </div>
-                                <div class="quick-action-text">Manage Products</div>
+                                <div class="quick-action-text">Quản lý Products</div>
+                            </a>
+                            <a href="/admin/categories" class="quick-action">
+                                <div class="quick-action-icon">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                <div class="quick-action-text">Quản lý Categories</div>
                             </a>
                             <a href="/admin/order" class="quick-action">
                                 <div class="quick-action-icon">
@@ -582,17 +552,11 @@
                                 </div>
                                 <div class="quick-action-text">View Orders</div>
                             </a>
-                            <a href="${pageContext.request.contextPath}/admin/categories" class="quick-action">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-tags"></i>
-                                </div>
-                                <div class="quick-action-text">Categories</div>
-                            </a>
-                            <a href="${pageContext.request.contextPath}/" class="quick-action">
+                            <a href="/?view=home" class="quick-action">
                                 <div class="quick-action-icon">
                                     <i class="fas fa-globe"></i>
                                 </div>
-                                <div class="quick-action-text">View Website</div>
+                                <div class="quick-action-text">Xem Website</div>
                             </a>
                         </div>
                     </div>

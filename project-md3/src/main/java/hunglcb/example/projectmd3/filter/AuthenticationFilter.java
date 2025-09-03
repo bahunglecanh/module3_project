@@ -10,53 +10,42 @@ import java.io.IOException;
 
 public class AuthenticationFilter implements Filter {
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Simple initialization
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        
+
         String requestURI = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
-        
-        // Get the path relative to context
         String path = requestURI.substring(contextPath.length());
-        
-        // Check if user is logged in
+
+        // false là chưa có sesstion thi tra ve null tu tao session moi
         HttpSession session = httpRequest.getSession(false);
+        // gia tri ban dau chua tro toi doi tuong nao
         User currentUser = null;
         if (session != null) {
             currentUser = (User) session.getAttribute("user");
         }
-        
-        // If user is not logged in, redirect to login page
+
+
         if (currentUser == null) {
             String loginURL = contextPath + "/auth/login?redirect=" + java.net.URLEncoder.encode(requestURI, "UTF-8");
             httpResponse.sendRedirect(loginURL);
             return;
         }
-        
+
         // Check admin access
         if (path.startsWith("/admin/")) {
             if (!currentUser.isAdmin()) {
-                // Non-admin trying to access admin area
                 httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
                 return;
             }
         }
-        
-        // User is authenticated and authorized, continue with the request
+        // Tiep tuc requeest response
         chain.doFilter(request, response);
     }
 
-    @Override
-    public void destroy() {
-        // Cleanup if needed
-    }
 }

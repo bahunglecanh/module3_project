@@ -206,6 +206,11 @@
             color: var(--danger-red);
         }
 
+        .status-banned {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+
         .role-badge {
             padding: 6px 12px;
             border-radius: 20px;
@@ -224,19 +229,37 @@
             color: var(--primary-purple);
         }
 
-        .btn-delete {
-            width: 32px;
-            height: 32px;
+        .btn-action {
+            padding: 6px 12px;
             border: none;
             border-radius: 6px;
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger-red);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-right: 6px;
         }
 
-        .btn-delete:hover {
+        .btn-ban {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-red);
+        }
+
+        .btn-ban:hover {
             background: var(--danger-red);
+            color: var(--white);
+        }
+
+        .btn-unban {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-green);
+        }
+
+        .btn-unban:hover {
+            background: var(--success-green);
             color: var(--white);
         }
 
@@ -300,10 +323,10 @@
     <div class="container">
         <!-- Navigation Links -->
         <div class="nav-links">
-            <a href="${pageContext.request.contextPath}/admin/dashboard">
+            <a href="/admin/dashboard">
                 <i class="fas fa-home"></i> Dashboard
             </a>
-            <a href="${pageContext.request.contextPath}/admin/listuser">
+            <a href="/admin/listuser">
                 <i class="fas fa-users"></i> Users
             </a>
         </div>
@@ -311,36 +334,20 @@
         <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">Quản lý Users</h1>
-            <p class="page-subtitle">Danh sách tất cả người dùng trong hệ thống (sử dụng UserDTO với JOIN query)</p>
+            <p class="page-subtitle">Danh sách tất cả người dùng trong hệ thống</p>
         </div>
-
-        <!-- Alerts -->
-
-        <c:if test="${errorMessage != null}">
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle"></i>
-                ${errorMessage}
-            </div>
-        </c:if>
-
-        <c:if test="${infoMessage != null}">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i>
-                ${infoMessage}
-            </div>
-        </c:if>
 
         <!-- Search Section -->
         <div class="search-section">
-            <form action="${pageContext.request.contextPath}/admin/listuser" method="get" class="search-form">
+            <form action="/admin/listuser" method="get" class="search-form">
                 <input type="hidden" name="action" value="search">
                 <input type="text" name="search" class="search-input"
-                       placeholder="Tìm kiếm theo tên hoặc email..."
+                       placeholder="Tìm kiếm theo tên "
                        value="${searchTerm}">
                 <button type="submit" class="btn-search">
                     <i class="fas fa-search"></i> Tìm kiếm
                 </button>
-                <a href="${pageContext.request.contextPath}/admin/listuser" class="btn-clear">
+                <a href="/admin/listuser" class="btn-clear">
                     <i class="fas fa-times"></i> Xóa
                 </a>
             </form>
@@ -355,7 +362,7 @@
                             Kết quả tìm kiếm: "${searchTerm}"
                         </c:when>
                         <c:otherwise>
-                            Danh sách Users (UserDTO)
+                            Danh sách Users
                         </c:otherwise>
                     </c:choose>
                 </h5>
@@ -383,6 +390,7 @@
                                 <th>Phone</th>
                                 <th>Gender</th>
                                 <th>Ngày tạo</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -390,6 +398,7 @@
                                 <tr>
                                     <td>
                                         <div style="display: flex; align-items: center; gap: 12px;">
+<%--                                            in hoa chu~ cai dau`--%>
                                             <div class="user-avatar">
                                                 <c:choose>
                                                     <c:when test="${user.fullName != null && !user.fullName.isEmpty()}">
@@ -426,8 +435,12 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="status-badge ${user.status == 'ACTIVE' ? 'status-active' : 'status-inactive'}">
-                                            ${user.status == 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động'}
+                                        <span class="status-badge ${user.status == 'ACTIVE' ? 'status-active' : (user.status == 'BANNED' ? 'status-banned' : 'status-inactive')}">
+                                            <c:choose>
+                                                <c:when test="${user.status == 'ACTIVE'}">Hoạt động</c:when>
+                                                <c:when test="${user.status == 'BANNED'}">Đã ban</c:when>
+                                                <c:otherwise>Không hoạt động</c:otherwise>
+                                            </c:choose>
                                         </span>
                                     </td>
                                     <td>
@@ -453,6 +466,28 @@
                                     <td>
                                         <c:if test="${user.createdAt != null}">
                                             <fmt:formatDate value="${user.createdAt}" pattern="dd/MM/yyyy HH:mm"/>
+                                        </c:if>
+                                    </td>
+                                    <td>
+                                        <c:if test="${user.role != 'ADMIN'}">
+                                            <c:choose>
+                                                <c:when test="${user.status == 'ACTIVE'}">
+                                                    <button type="button" class="btn-action btn-ban"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#banModal"
+                                                            onclick="getInfoBan(${user.id}, '${user.fullName != null && !user.fullName.trim().isEmpty() ? user.fullName : user.email}')">
+                                                        <i class="fas fa-ban"></i> Ban
+                                                    </button>
+                                                </c:when>
+                                                <c:when test="${user.status == 'BANNED'}">
+                                                    <button type="button" class="btn-action btn-unban"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#unbanModal"
+                                                            onclick="getInfoUnban(${user.id}, '${user.fullName != null && !user.fullName.trim().isEmpty() ? user.fullName : user.email}')">
+                                                        <i class="fas fa-check"></i> Unban
+                                                    </button>
+                                                </c:when>
+                                            </c:choose>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -482,10 +517,77 @@
         </div>
     </div>
 
+    <!-- Ban Modal -->
+    <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="${pageContext.request.contextPath}/admin/listuser" method="post">
+                <input type="hidden" name="action" value="ban">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="banModalLabel">Xác nhận Ban User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="banUserId" name="userId">
+                        <span>Bạn có muốn ban user </span>
+                        <span style="color: red; font-weight: bold;" id="banUserName"></span>
+                        <span> không?</span>
+                        <div class="mt-3">
+                            <small class="text-muted">Sau khi ban, user sẽ không thể đăng nhập vào hệ thống.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">Ban User</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Unban Modal -->
+    <div class="modal fade" id="unbanModal" tabindex="-1" aria-labelledby="unbanModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="${pageContext.request.contextPath}/admin/listuser" method="post">
+                <input type="hidden" name="action" value="unban">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="unbanModalLabel">Xác nhận Unban User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="unbanUserId" name="userId">
+                        <span>Bạn có muốn unban user </span>
+                        <span style="color: green; font-weight: bold;" id="unbanUserName"></span>
+                        <span> không?</span>
+                        <div class="mt-3">
+                            <small class="text-muted">Sau khi unban, user sẽ có thể đăng nhập trở lại hệ thống.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-success">Unban User</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // Functions to handle modal data
+        function getInfoBan(id, name) {
+            document.getElementById("banUserName").innerText = name;
+            document.getElementById("banUserId").value = id;
+        }
+        
+        function getInfoUnban(id, name) {
+            document.getElementById("unbanUserName").innerText = name;
+            document.getElementById("unbanUserId").value = id;
+        }
+
         // Auto hide alerts after 5 seconds
         document.addEventListener('DOMContentLoaded', function() {
             const alerts = document.querySelectorAll('.alert');
