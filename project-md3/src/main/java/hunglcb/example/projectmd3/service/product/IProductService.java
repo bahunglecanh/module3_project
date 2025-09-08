@@ -12,6 +12,7 @@ public interface IProductService {
     boolean addProduct(Product product);
     boolean updateProduct(Product product);
     boolean deleteProduct(Integer id);
+    Product getProductById(Integer id);
     
     // Product Details
     Product getProductDetail(Integer productId);

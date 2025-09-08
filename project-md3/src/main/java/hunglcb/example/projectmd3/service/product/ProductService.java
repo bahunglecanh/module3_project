@@ -39,6 +39,11 @@ public class ProductService implements IProductService {
     }
     
     @Override
+    public Product getProductById(Integer id) {
+        return productRepository.findById(id);
+    }
+    
+    @Override
     public Product getProductDetail(Integer productId) {
         return productRepository.findById(productId);
     }

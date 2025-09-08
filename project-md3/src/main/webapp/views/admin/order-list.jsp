@@ -93,6 +93,13 @@
                     <span class="nav-text">Products</span>
                 </a>
             </div>
+
+            <div class="nav-item">
+                <a href="/admin/categories" class="nav-link">
+                    <span class="nav-icon"><i class="fas fa-tags"></i></span>
+                    <span class="nav-text">Categories</span>
+                </a>
+            </div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/order" class="nav-link active">
                     <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>

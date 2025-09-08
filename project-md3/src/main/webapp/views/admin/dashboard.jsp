@@ -7,14 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VENUS DASHBOARD</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary-purple: #6366f1;
@@ -401,171 +401,171 @@
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <!-- Logo Section -->
-            <div class="logo-section">
-                <a href="/admin/dashboard" class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-gem"></i>
-                    </div>
-                    <div class="logo-text">
-                        <div class="logo-title">ADMIN</div>
-                        <div class="logo-subtitle">DASHBOARD</div>
-                    </div>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <a href="/admin/dashboard" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div class="logo-text">
+                    <div class="logo-title">ADMIN</div>
+                    <div class="logo-subtitle">DASHBOARD</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <a href="/?view=home" class="nav-link">
+                    <span class="nav-icon"><i class="fas fa-home"></i></span>
+                    <span class="nav-text">Home</span>
                 </a>
             </div>
 
-            <!-- Navigation Menu -->
-            <nav class="nav-menu">
-                <div class="nav-item">
-                    <a href="/?view=home" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-home"></i></span>
-                        <span class="nav-text">Home</span>
-                    </a>
-                </div>
+            <div class="nav-item">
+                <a href="/admin/listuser" class="nav-link">
+                    <span class="nav-icon"><i class="fas fa-users"></i></span>
+                    <span class="nav-text">Users</span>
+                </a>
+            </div>
 
-                <div class="nav-item">
-                    <a href="/admin/listuser" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-users"></i></span>
-                        <span class="nav-text">Users</span>
-                    </a>
-                </div>
+            <div class="nav-item">
+                <a href="/admin/products" class="nav-link">
+                    <span class="nav-icon"><i class="fas fa-box"></i></span>
+                    <span class="nav-text">Products</span>
+                </a>
+            </div>
 
-                <div class="nav-item">
-                    <a href="/admin/products" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-box"></i></span>
-                        <span class="nav-text">Products</span>
-                    </a>
-                </div>
+            <div class="nav-item">
+                <a href="/admin/categories" class="nav-link">
+                    <span class="nav-icon"><i class="fas fa-tags"></i></span>
+                    <span class="nav-text">Categories</span>
+                </a>
+            </div>
 
-                <div class="nav-item">
-                    <a href="/admin/categories" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-tags"></i></span>
-                        <span class="nav-text">Categories</span>
-                    </a>
-                </div>
+            <div class="nav-item">
+                <a href="/admin/order" class="nav-link">
+                    <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
+                    <span class="nav-text">View Orders</span>
+                </a>
+            </div>
 
-                <div class="nav-item">
-                    <a href="/admin/order" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
-                        <span class="nav-text">View Orders</span>
-                    </a>
-                </div>
+            <!-- Logout -->
+            <div class="nav-item" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-gray);">
+                <a href="/auth/logout" class="nav-link">
+                    <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
 
-                <!-- Logout -->
-                <div class="nav-item" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-gray);">
-                    <a href="/auth/logout" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
-                        <span class="nav-text">Logout</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="content-header">
+            <h1 class="page-title">Admin Dashboard</h1>
+            <p class="page-subtitle">Quản lý hệ thống</p>
+        </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Header -->
-            <header class="content-header">
-                <h1 class="page-title">Admin Dashboard</h1>
-                <p class="page-subtitle">Quản lý hệ thống</p>
-            </header>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <h6 class="stat-title">Users</h6>
-                        <div class="stat-icon users">
-                            <i class="fas fa-users"></i>
-                        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <h6 class="stat-title">Users</h6>
+                    <div class="stat-icon users">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="stat-number">${stats.totalUsers != null ? stats.totalUsers : 0}</div>
-                    <div class="stat-description">Tổng số người dùng</div>
                 </div>
+                <div class="stat-number">${stats.totalUsers != null ? stats.totalUsers : 0}</div>
+                <div class="stat-description">Tổng số người dùng</div>
+            </div>
 
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <h6 class="stat-title">Products</h6>
-                        <div class="stat-icon products">
-                            <i class="fas fa-box"></i>
-                        </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <h6 class="stat-title">Products</h6>
+                    <div class="stat-icon products">
+                        <i class="fas fa-box"></i>
                     </div>
-                    <div class="stat-number">${stats.totalProducts != null ? stats.totalProducts : 0}</div>
-                    <div class="stat-description">Tổng số sản phẩm</div>
                 </div>
+                <div class="stat-number">${stats.totalProducts != null ? stats.totalProducts : 0}</div>
+                <div class="stat-description">Tổng số sản phẩm</div>
+            </div>
 
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <h6 class="stat-title">Categories</h6>
-                        <div class="stat-icon categories">
-                            <i class="fas fa-tags"></i>
-                        </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <h6 class="stat-title">Categories</h6>
+                    <div class="stat-icon categories">
+                        <i class="fas fa-tags"></i>
                     </div>
-                    <div class="stat-number">${stats.totalCategories != null ? stats.totalCategories : 0}</div>
-                    <div class="stat-description">Tổng số danh mục</div>
+                </div>
+                <div class="stat-number">${stats.totalCategories != null ? stats.totalCategories : 0}</div>
+                <div class="stat-description">Tổng số danh mục</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <div class="card-header">
+                    <h5 class="card-title">Thông tin hệ thống</h5>
+                </div>
+                <div class="card-body">
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-cog" style="font-size: 48px; color: var(--primary-purple); margin-bottom: 16px;"></i>
+                        <h6>Hệ thống hoạt động bình thường</h6>
+                        <p class="text-muted">Tất cả các chức năng đang hoạt động tốt</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="content-grid">
-                <div class="content-card">
-                    <div class="card-header">
-                        <h5 class="card-title">Thông tin hệ thống</h5>
-                    </div>
-                    <div class="card-body">
-                        <div style="text-align: center; padding: 20px;">
-                            <i class="fas fa-cog" style="font-size: 48px; color: var(--primary-purple); margin-bottom: 16px;"></i>
-                            <h6>Hệ thống hoạt động bình thường</h6>
-                            <p class="text-muted">Tất cả các chức năng đang hoạt động tốt</p>
-                        </div>
-                    </div>
+            <!-- Quick Actions -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h5 class="card-title">Quick Actions</h5>
                 </div>
-
-                <!-- Quick Actions -->
-                <div class="content-card">
-                    <div class="card-header">
-                        <h5 class="card-title">Quick Actions</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="quick-actions">
-                            <a href="/admin/listuser" class="quick-action">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <div class="quick-action-text">Quản lý Users</div>
-                            </a>
-                            <a href="/admin/products" class="quick-action">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-box"></i>
-                                </div>
-                                <div class="quick-action-text">Quản lý Products</div>
-                            </a>
-                            <a href="/admin/categories" class="quick-action">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-tags"></i>
-                                </div>
-                                <div class="quick-action-text">Quản lý Categories</div>
-                            </a>
-                            <a href="/admin/order" class="quick-action">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </div>
-                                <div class="quick-action-text">View Orders</div>
-                            </a>
-                            <a href="/?view=home" class="quick-action">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-globe"></i>
-                                </div>
-                                <div class="quick-action-text">Xem Website</div>
-                            </a>
-                        </div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <a href="/admin/listuser" class="quick-action">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="quick-action-text">Quản lý Users</div>
+                        </a>
+                        <a href="/admin/products" class="quick-action">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="quick-action-text">Quản lý Products</div>
+                        </a>
+                        <a href="/admin/categories" class="quick-action">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="quick-action-text">Quản lý Categories</div>
+                        </a>
+                        <a href="/admin/order" class="quick-action">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="quick-action-text">View Orders</div>
+                        </a>
+                        <a href="/?view=home" class="quick-action">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="quick-action-text">Xem Website</div>
+                        </a>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
